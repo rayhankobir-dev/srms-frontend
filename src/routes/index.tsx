@@ -4,8 +4,9 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import AuthRoutes from "./auth";
 import { AuthLayout } from "@/layouts";
 import LoadingScreen from "@/components/common/loading-screen";
+import DashboardLayout from "@/layouts/dashboard/dashboard-layout";
 
-const HomePage = lazy(() => import("@/pages/auth/login"));
+const HomePage = lazy(() => import("@/pages/dashboard/home"));
 const NotFoundPage = lazy(() => import("@/pages/errors/not-found"));
 
 export const AppRouter = () => (
@@ -16,7 +17,7 @@ export const AppRouter = () => (
           <Route path="/auth/*" element={<AuthRoutes />} />
         </Route>
 
-        <Route element={<AuthLayout />}>
+        <Route element={<DashboardLayout />}>
           <Route path="/" element={<HomePage />} />
         </Route>
 
