@@ -1,9 +1,6 @@
 import {
   BookCheck,
   ChartNoAxesCombined,
-  Frame,
-  Map,
-  PieChart,
   Soup,
   Store,
   UtensilsCrossed,
@@ -11,18 +8,21 @@ import {
 
 export const dashboards = [
   {
+    id: "inventory",
     name: "Inventory",
     description: "Dashboard",
     logo: BookCheck,
     color: "",
   },
   {
+    id: "dining",
     name: "Dining.",
     description: "Dashboard",
     logo: UtensilsCrossed,
     color: "",
   },
   {
+    id: "sales",
     name: "Sales",
     description: "Dashboard",
     logo: ChartNoAxesCombined,
@@ -33,17 +33,17 @@ export const dashboards = [
 export const inventoryNavItems = [
   {
     title: "Store",
-    url: "",
+    url: "/sales",
     icon: Store,
     isActive: true,
     items: [
       {
         title: "Stocks",
-        url: "",
+        url: "/sales",
       },
       {
         title: "Add Stock",
-        url: "",
+        url: "/sales/add",
       },
       {
         title: "Configure",
@@ -75,18 +75,23 @@ export const inventoryNavItems = [
 
 export const salesNavItems = [
   {
-    name: "Design Engineering",
-    url: "#",
-    icon: Frame,
-  },
-  {
-    name: "Sales & Marketing",
-    url: "#",
-    icon: PieChart,
-  },
-  {
-    name: "Travel",
-    url: "#",
-    icon: Map,
+    title: "Sales",
+    url: "",
+    icon: ChartNoAxesCombined,
+    isActive: true,
+    items: [
+      {
+        title: "Reports",
+        url: "",
+      },
+      {
+        title: "Add Stock",
+        url: "",
+      },
+      {
+        title: "Configure",
+        url: "",
+      },
+    ],
   },
 ];

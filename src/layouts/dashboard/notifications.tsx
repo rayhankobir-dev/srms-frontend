@@ -74,8 +74,11 @@ function Notifications() {
         </div>
 
         <div className="max-h-[400px] flex flex-col gap-2 overflow-y-scroll">
-          {notifications.map((item) => (
-            <div className="flex items-center gap-3 px-3 py-2 border rounded-sm">
+          {notifications.map((item, index) => (
+            <div
+              key={index}
+              className="flex items-center gap-3 px-3 py-2 border rounded-sm"
+            >
               <Info className="text-primary" />
               <div>
                 <h2 className="font-medium text-sm text-foreground">

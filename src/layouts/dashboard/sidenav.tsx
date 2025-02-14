@@ -15,6 +15,8 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
+import { useDashboard } from "@/contexts/DashboardContext";
+import { NavLink } from "react-router-dom";
 
 export function NavMain({
   items,
@@ -30,10 +32,12 @@ export function NavMain({
     }[];
   }[];
 }) {
+  const { selectedDashboard } = useDashboard();
+
   return (
     <SidebarGroup>
       <SidebarGroupLabel className="text-sm uppercase">
-        Inventory
+        {selectedDashboard.name}
       </SidebarGroupLabel>
       <SidebarMenu>
         {items.map((item) => (
@@ -60,9 +64,9 @@ export function NavMain({
                   {item.items?.map((subItem) => (
                     <SidebarMenuSubItem key={subItem.title}>
                       <SidebarMenuSubButton asChild>
-                        <a href={subItem.url}>
+                        <NavLink to={subItem.url}>
                           <span className="text-base">{subItem.title}</span>
-                        </a>
+                        </NavLink>
                       </SidebarMenuSubButton>
                     </SidebarMenuSubItem>
                   ))}

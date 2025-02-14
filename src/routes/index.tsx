@@ -19,6 +19,8 @@ export const AppRouter = () => (
 
         <Route element={<DashboardLayout />}>
           <Route path="/" element={<HomePage />} />
+          <Route path="/sales" element={<h1>Sales</h1>} />
+          <Route path="/sales/add" element={<h1>Sales</h1>} />
         </Route>
 
         <Route path="*" element={<NotFoundPage />} />
