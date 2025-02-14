@@ -7,11 +7,13 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import NavUser from "./nav-user";
+import Shortcut from "./shortcut";
+import Notifications from "./notifications";
 import { Button } from "@/components/ui/button";
 import useFullscreen from "@/hooks/useFullscreen";
+import { Fullscreen, Maximize } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { Bell, Fullscreen, Maximize } from "lucide-react";
 
 function Header() {
   const user = {
@@ -26,7 +28,7 @@ function Header() {
     <header className="sticky top-0 z-50 bg-background flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-16 border-b">
       <div className="w-full flex items-center justify-between gap-2 px-4">
         <div className="flex items-center gap-2">
-          <SidebarTrigger className="-ml-1 h-10 w-10 [&_svg]:h-5 [&_svg]:w-5" />
+          <SidebarTrigger className="-ml-1 h-10 w-10 [&_svg]:h-5 [&_svg]:w-5 text-primary hover:text-primary" />
           <Separator orientation="vertical" className="mr-2 h-6" />
           <Breadcrumb>
             <BreadcrumbList>
@@ -41,6 +43,7 @@ function Header() {
           </Breadcrumb>
         </div>
         <div className="flex items-center gap-0.5">
+          <Shortcut />
           <Button
             className="h-10 w-10 [&_svg]:h-5 [&_svg]:w-5"
             variant="ghost"
@@ -53,16 +56,7 @@ function Header() {
               <Fullscreen className="text-primary" />
             )}
           </Button>
-          <Button
-            className="relative h-10 w-10 [&_svg]:h-5 [&_svg]:w-5"
-            variant="ghost"
-            size="icon"
-          >
-            <span className="absolute -top-0.5 right-1 w-5 h-5 inline-flex items-center justify-center bg-green-600 rounded-full text-[0.7rem] text-white">
-              10
-            </span>
-            <Bell className="text-primary" />
-          </Button>
+          <Notifications />
           <NavUser user={user} />
         </div>
       </div>

@@ -1,5 +1,13 @@
-import { BookCheck, Frame, Map, PieChart, Soup, Store } from "lucide-react";
-import { AudioWaveform, Command } from "lucide-react";
+import {
+  BookCheck,
+  ChartNoAxesCombined,
+  Frame,
+  Map,
+  PieChart,
+  Soup,
+  Store,
+  UtensilsCrossed,
+} from "lucide-react";
 
 export const dashboards = [
   {
@@ -11,13 +19,13 @@ export const dashboards = [
   {
     name: "Dining.",
     description: "Dashboard",
-    logo: AudioWaveform,
+    logo: UtensilsCrossed,
     color: "",
   },
   {
     name: "Sales",
     description: "Dashboard",
-    logo: Command,
+    logo: ChartNoAxesCombined,
     color: "",
   },
 ];
