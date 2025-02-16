@@ -8,7 +8,7 @@ export default function HomePage() {
   return (
     <main className="space-y-4">
       <Meta title="Dashboard" />
-      <FileUploader className="max-w-md" />
+      <FileUploader className="" />
       <AreaChartDemo />
       <div className="grid md:grid-cols-2 gap-4">
         <BarChartDemo />
