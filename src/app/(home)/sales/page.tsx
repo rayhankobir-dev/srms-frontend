@@ -88,7 +88,7 @@ function SalesPage() {
               </Button>
             </div>
           </div>
-          <div className="border-t">
+          <div className="border-t border-gray-200 dark:border-gray-800 ">
             <DataTable table={table} />
           </div>
         </div>

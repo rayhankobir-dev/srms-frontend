@@ -222,7 +222,7 @@ function UsersPage() {
           </div>
         </div>
 
-        <div className="border-t">
+        <div className="border-t border-gray-200 dark:border-gray-800 ">
           <DataTable isLoading={isFetching} table={table} />
         </div>
       </section>

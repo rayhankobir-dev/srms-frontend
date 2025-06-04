@@ -33,7 +33,7 @@ function LoginForm() {
     const { data } = await api.post("/users/login", values)
     login(data.user, data.token)
     resetForm()
-    await new Promise((resolve) => setTimeout(resolve, 3000))
+    await new Promise((resolve) => setTimeout(resolve, 1500))
 
     if (data.user.role === "STUFF") {
       router.replace("/dining")

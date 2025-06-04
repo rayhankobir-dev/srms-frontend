@@ -21,7 +21,7 @@ const geistMono = localFont({
 })
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://yoururl.com"),
+  metadataBase: new URL(siteConfig.appUrl),
   title: siteConfig.name,
   description: siteConfig.description,
   keywords: ["Dashboard", "Data Visualization", "Software"],
@@ -40,7 +40,7 @@ export const metadata: Metadata = {
     creator: "@yourname",
   },
   icons: {
-    icon: "/favicon.ico",
+    icon: siteConfig.logoUrl,
   },
 }
 

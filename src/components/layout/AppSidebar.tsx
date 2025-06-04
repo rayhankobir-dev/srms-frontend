@@ -144,8 +144,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   }
 
   return (
-    <Sidebar {...props} className="bg-gray-50 dark:bg-gray-925">
-      <SidebarHeader className="border-b border-opacity-10">
+    <Sidebar {...props} className="bg-gray-50 dark:bg-gray-925 scrollbar-none">
+      <SidebarHeader className="border-b border-gray-200 dark:border-gray-800">
         <div className="flex items-center gap-1">
           <img
             src={process.env.NEXT_PUBLIC_APP_LOGO_URL}
