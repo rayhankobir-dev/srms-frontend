@@ -12,6 +12,7 @@ import { useAuthStore } from "@/stores/authStore"
 import { ErrorMessage, FormikProvider, useFormik } from "formik"
 import api from "@/lib/api"
 import { useState } from "react"
+import Spinner from "@/components/shared/Spinner"
 
 const loginSchema = yup.object({
   email: yup
@@ -27,23 +28,24 @@ function LoginForm() {
   const { login } = useAuthStore()
 
   const handleFormSubmit = async (values: any, { resetForm }: any) => {
-    try {
-      setIsLoading(true)
-      const { data } = await api.post("/users/login", values)
-      login(data.user, data.token)
-      resetForm()
+  try {
+    setIsLoading(true)
+    const { data } = await api.post("/users/login", values)
+    login(data.user, data.token)
+    resetForm()
+    await new Promise((resolve) => setTimeout(resolve, 3000))
 
-      if (data.user.role === "STUFF") {
-        router.push("/dining")
-      } else {
-        router.push("/")
-      }
-    } catch (error: any) {
-      toast.error(error?.response?.data?.message || error.message)
-    } finally {
-      setIsLoading(false)
+    if (data.user.role === "STUFF") {
+      router.replace("/dining")
+    } else {
+      router.replace("/")
     }
+  } catch (error: any) {
+    toast.error(error?.response?.data?.message || error.message)
+  } finally {
+    setIsLoading(false)
   }
+}
 
   const formik = useFormik({
     initialValues: {
@@ -62,10 +64,9 @@ function LoginForm() {
             <Label htmlFor="email">Email</Label>
             <div className="space-y-1">
               <Input
-                id="email"
                 type="email"
                 placeholder="m@example.com"
-                hasError={formik?.errors?.email !== undefined}
+                hasError={(formik.touched.email && formik.errors.email) !== undefined}
                 {...formik.getFieldProps("email")}
               />
               <ErrorMessage
@@ -87,10 +88,9 @@ function LoginForm() {
             </div>
             <div className="space-y-1">
               <Input
-                id="password"
                 type="password"
                 placeholder="******"
-                hasError={formik.errors.password !== undefined}
+                hasError={(formik.touched.password && formik.errors.password) !== undefined}
                 {...formik.getFieldProps("password")}
               />
               <ErrorMessage
@@ -100,13 +100,14 @@ function LoginForm() {
               />
             </div>
           </div>
-          <Button type="submit" className="group w-full gap-2">
-            {isLoading ? "Loading..." : "Login"}
+          <Button disabled={isLoading} type="submit" className="group w-full gap-2">
+            {isLoading ? <Spinner loadingText="Authenticating"/> : <>
             Login
             <LogIn
               className="duration-300 group-hover:translate-x-1.5"
               size={14}
             />
+            </>}
           </Button>
         </div>
       </FormikProvider>
