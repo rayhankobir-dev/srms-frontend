@@ -1,6 +1,6 @@
 export const siteConfig = {
-  name: "কাচ্চি ভাই",
-  logoUrl: "https://cdn.prod.website-files.com/63de61fd6af00b31333c0d3a/63f0729263ea2212dc19bb79_logo-4-removebg-p-500.webp",
+  name: process.env.NEXT_PUBLIC_SITE_NAME || process.env.NEXT_APP_NAME,
+  logoUrl: process.env.NEXT_PUBLIC_LOGO_URL || process.env.NEXT_APP_LOGO_URL,
   url: "/",
   appUrl: process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
   description: "The simplest dashboard template.",
@@ -11,6 +11,6 @@ export const siteConfig = {
       audits: "/quotes/audits",
     },
   },
-}
+};
 
-export type siteConfig = typeof siteConfig
+export type siteConfig = typeof siteConfig;
