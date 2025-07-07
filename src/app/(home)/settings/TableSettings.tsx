@@ -179,6 +179,10 @@ function TableSettings() {
       <CardFooter className="flex flex-wrap gap-3 border-t pt-2">
         {tableFetching ? (
           <Spinner />
+        ) : tables.length === 0 ? (
+          <div className="w-full py-4 text-center text-sm text-muted-foreground">
+            No tables found please create.
+          </div>
         ) : (
           tables.map((table, index) => (
             <Table

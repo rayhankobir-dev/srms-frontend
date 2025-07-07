@@ -18,6 +18,7 @@ import { useAuthStore } from "@/stores/authStore";
 import { Textarea } from "@/components/ui/Textarea";
 import { SelectInput } from "@/components/ui/SelectInput";
 import { ErrorMessage, FormikProvider, useFormik } from "formik";
+import toast from "react-hot-toast";
 
 const settingsSchema = Yup.object().shape({
   firstName: Yup.string().required("First name is required"),
@@ -63,9 +64,10 @@ function Profile() {
           `${endpoints.users}/${user?._id}`,
           values
         );
-        console.log(data);
-      } catch (error) {
-        console.log(error);
+        console.log({ data });
+        toast.success("Profile updated successfully");
+      } catch (error: any) {
+        toast.error(error?.response?.data?.message || error.message);
       } finally {
         setIsUpdating(false);
       }

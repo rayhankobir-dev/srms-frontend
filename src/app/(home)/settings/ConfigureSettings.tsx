@@ -7,17 +7,17 @@ import {
   CardTitle,
 } from "@/components/ui/Card";
 import * as Yup from "yup";
+import { ISettings } from "@/types";
+import toast from "react-hot-toast";
 import { Save } from "lucide-react";
+import api, { endpoints } from "@/lib/api";
+import { useEffect, useState } from "react";
 import { Input } from "@/components/ui/Input";
 import { Label } from "@/components/ui/Label";
 import { Button } from "@/components/ui/Button";
 import { currencies } from "@/constants/data";
 import { SelectInput } from "@/components/ui/SelectInput";
 import { ErrorMessage, FormikProvider, useFormik } from "formik";
-import { useEffect, useState } from "react";
-import api, { endpoints } from "@/lib/api";
-import { ISettings } from "@/types";
-import toast from "react-hot-toast";
 
 const settingsSchema = Yup.object().shape({
   tableCount: Yup.number().required("Table count is required"),
@@ -41,8 +41,9 @@ function ConfigureSettings() {
       try {
         setIsFetching(true);
         const { data } = await api.get(endpoints.settings);
-        console.log({ data });
-        setSettings(data);
+        if (data) {
+          setSettings(data);
+        }
       } catch (error) {
         console.error(error);
       } finally {
@@ -70,6 +71,7 @@ function ConfigureSettings() {
       }
     },
   });
+
   return (
     <Card>
       <CardHeader>
@@ -131,12 +133,12 @@ function ConfigureSettings() {
 
                 <div className="space-y-0.5">
                   <SelectInput
+                    isLoading={false}
+                    placeholder="Select currency"
                     options={currencies.map((c) => ({
                       label: `${c.code} (${c.name})`,
                       value: c.code,
                     }))}
-                    placeholder="Select currency"
-                    isLoading={false}
                     hasError={
                       formik.touched.currency &&
                       formik.errors.currency !== undefined
