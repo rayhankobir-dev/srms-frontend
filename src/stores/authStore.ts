@@ -1,6 +1,7 @@
 import { User } from "@/types";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import Cookies from "js-cookie";
 
 type AuthStore = {
   user: User | null;
@@ -16,7 +17,7 @@ export const useAuthStore = create<AuthStore>()(
   persist(
     (set) => ({
       user: null,
-      token: null,
+      token: Cookies.get("token") || null,
       setUser: (user) => set({ user }),
       login: (user, token) => set({ user, token }),
       logout: () => set({ user: null, token: null }),
@@ -25,7 +26,7 @@ export const useAuthStore = create<AuthStore>()(
     }),
     {
       name: "auth-storage",
-      partialize: (state) => ({ token: state.token }),
+      partialize: (state) => ({ token: state.token, user: state.user }),
       onRehydrateStorage: () => (state) => {
         state?.setHasHydrated(true);
       },

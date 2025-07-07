@@ -1,52 +1,22 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
-import api, { endpoints } from "@/lib/api";
+import Cookie from "js-cookie";
 import { useEffect, useState } from "react";
 import { ThemeProvider } from "next-themes";
 import Header from "@/components/layout/Header";
-import { useRouter } from "next/navigation";
-import { useAuthStore } from "@/stores/authStore";
 import { SidebarProvider } from "@/components/ui/Sidebar";
-import LoadingScreen from "@/components/ui/LoadingScreen";
 import { AppSidebar } from "@/components/layout/AppSidebar";
+import AuthRoute from "@/components/shared/AuthRoute";
 
 function HomeLayout({ children }: { children: React.ReactNode }) {
-  const [isLoading, setIsLoading] = useState(true);
-  const [defaultOpen, setDefaultOpen] = useState(false);
-  const { token, user, setUser, hasHydrated } = useAuthStore();
-  const router = useRouter();
+  const [defaultOpen, setDefaultOpen] = useState(true);
 
   useEffect(() => {
-    const sidebarCookie = document.cookie
-      .split("; ")
-      .find((row) => row.startsWith("sidebar:state="));
-    const value = sidebarCookie?.split("=")[1];
-    setDefaultOpen(value === "true");
+    const sidebarState = Cookie.get("sidebar:state");
+    setDefaultOpen(sidebarState === "true");
   }, []);
 
-  useEffect(() => {
-    const fetchUserProfile = async () => {
-      if (!token && hasHydrated) {
-        router.push("/auth/login");
-        return;
-      }
-
-      try {
-        const res = await api.get(endpoints.userProfile);
-        setUser(res.data);
-      } catch {
-        localStorage.removeItem("auth-storage");
-        router.replace("/auth/login");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchUserProfile();
-  }, [token, hasHydrated, router]);
-
-  if (!isLoading && token && user) {
-    return (
+  return (
+    <AuthRoute>
       <ThemeProvider
         defaultTheme="system"
         disableTransitionOnChange
@@ -60,10 +30,8 @@ function HomeLayout({ children }: { children: React.ReactNode }) {
           </div>
         </SidebarProvider>
       </ThemeProvider>
-    );
-  }
-
-  return <LoadingScreen />;
+    </AuthRoute>
+  );
 }
 
 export default HomeLayout;

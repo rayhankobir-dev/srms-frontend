@@ -25,8 +25,8 @@ const loginSchema = yup.object({
 
 function LoginForm() {
   const [isLoading, setIsLoading] = useState(false);
-  const router = useRouter();
   const { login } = useAuthStore();
+  const router = useRouter();
 
   const handleFormSubmit = async (values: any, { resetForm }: any) => {
     try {
@@ -61,7 +61,9 @@ function LoginForm() {
       <FormikProvider value={formik}>
         <div className="grid gap-6">
           <div className="grid gap-2">
-            <Label htmlFor="email">Email</Label>
+            <Label required htmlFor="email">
+              Email
+            </Label>
             <div className="space-y-1">
               <Input
                 type="email"
@@ -80,7 +82,9 @@ function LoginForm() {
           </div>
           <div className="grid gap-2">
             <div className="flex items-center">
-              <Label htmlFor="password">Password</Label>
+              <Label required htmlFor="password">
+                Password
+              </Label>
               <Link
                 href="/auth/forgot-password"
                 className="ml-auto text-sm underline-offset-4 hover:underline"
