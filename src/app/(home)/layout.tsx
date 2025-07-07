@@ -13,7 +13,7 @@ import { AppSidebar } from "@/components/layout/AppSidebar";
 function HomeLayout({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
   const [defaultOpen, setDefaultOpen] = useState(false);
-  const { token, setUser, hasHydrated } = useAuthStore();
+  const { token, user, setUser, hasHydrated } = useAuthStore();
   const router = useRouter();
 
   useEffect(() => {
@@ -45,7 +45,7 @@ function HomeLayout({ children }: { children: React.ReactNode }) {
     fetchUserProfile();
   }, [token, hasHydrated, router]);
 
-  if (!isLoading && token) {
+  if (!isLoading && token && user) {
     return (
       <ThemeProvider
         defaultTheme="system"
