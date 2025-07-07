@@ -1,7 +1,7 @@
 import { User } from "@/types";
+import Cookies from "js-cookie";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import Cookies from "js-cookie";
 
 type AuthStore = {
   user: User | null;

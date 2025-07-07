@@ -1,11 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable react-hooks/exhaustive-deps */
 "use client";
-import { columns } from "./columns";
-import { Input } from "@/components/ui/Input";
-import { Button } from "@/components/ui/Button";
-import { DataTable } from "@/components/ui/data-table/DataTable";
-import DeleteConfirmation from "@/components/shared/DeleteConfirmation";
+
 import {
   Calendar1,
   FileSpreadsheet,
@@ -14,9 +10,6 @@ import {
   Trash2,
   X,
 } from "lucide-react";
-import { exportTableToPDF, exportToExcel } from "@/lib/export";
-import { useEffect, useRef, useState } from "react";
-import { toast } from "react-hot-toast";
 import {
   ColumnFiltersState,
   getCoreRowModel,
@@ -25,11 +18,19 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { useDebouncedCallback } from "use-debounce";
-import { FormDialog } from "@/components/shared/FormDialog";
-import RestaurantForm, { RestaurantFormValues } from "./ResturantForm";
-import { useRestaurantStockStore } from "@/stores/useRestorentStockStore";
+import { columns } from "./columns";
+import { toast } from "react-hot-toast";
 import api, { endpoints } from "@/lib/api";
+import { Input } from "@/components/ui/Input";
+import { Button } from "@/components/ui/Button";
+import { useDebouncedCallback } from "use-debounce";
+import { useEffect, useRef, useState } from "react";
+import { FormDialog } from "@/components/shared/FormDialog";
+import { exportTableToPDF, exportToExcel } from "@/lib/export";
+import { DataTable } from "@/components/ui/data-table/DataTable";
+import RestaurantForm, { RestaurantFormValues } from "./ResturantForm";
+import DeleteConfirmation from "@/components/shared/DeleteConfirmation";
+import { useRestaurantStockStore } from "@/stores/useRestorentStockStore";
 
 function StockResturantPage() {
   const [isLoading, setIsLoading] = useState(true);
@@ -76,7 +77,7 @@ function StockResturantPage() {
 
     try {
       setIsDeleting(true);
-      const { data } = await api.delete(`/restaurant-stocks`, {
+      const { data } = await api.delete(endpoints.inventory, {
         data: { ids: selectedIds },
       });
 
@@ -112,7 +113,7 @@ function StockResturantPage() {
   ) => {
     try {
       setIsLoading(true);
-      const { data } = await api.post("/restaurant-stocks", values);
+      const { data } = await api.post(endpoints.inventory, values);
       await new Promise((resolve) => setTimeout(resolve, 1500));
 
       addRestaurantStocks([data]);
@@ -145,7 +146,7 @@ function StockResturantPage() {
   return (
     <main className="space-y-3.5">
       <section className="px-4">
-        <h1 className="text-lg font-semibold">Stock Resturant</h1>
+        <h1 className="text-lg font-semibold">Restaurant stocks</h1>
         <p className="max-w-2xl text-sm">
           Find your resturant stocks. Search by item name or by category.
         </p>
@@ -185,19 +186,22 @@ function StockResturantPage() {
             <FormDialog
               open={dialogOpen}
               onOpenChange={setDialogOpen}
+              className="p-0 max-w-md"
               form={
                 <RestaurantForm
                   initialValues={{
                     itemName: "",
                     newStock: 0,
-                    cooked: 0,
-                    sales: 0,
                     inStock: 0,
+                    cooked: 0,
+                    sold: 0,
+                    unit: "",
                   }}
+                  setDialogOpen={setDialogOpen}
                   onSubmit={onFormSubmit}
-                  title="Add New Item"
+                  title="Add new restaurant stock"
                   description="Add a new item to the inventory"
-                  buttonText="Add Item"
+                  buttonText="Create stock"
                   isLoading={isLoading}
                   loadingText="Creating"
                 />

@@ -2,10 +2,6 @@
 /* eslint-disable react/no-unescaped-entities */
 "use client";
 
-import { Input } from "@/components/ui/Input";
-import { Button } from "@/components/ui/Button";
-import { DataTable } from "@/components/ui/data-table/DataTable";
-import DeleteConfirmation from "@/components/shared/DeleteConfirmation";
 import {
   Calendar1,
   FileSpreadsheet,
@@ -14,8 +10,6 @@ import {
   Trash2,
   X,
 } from "lucide-react";
-import { exportTableToPDF, exportToExcel } from "@/lib/export";
-import { useEffect, useRef, useState } from "react";
 import {
   getCoreRowModel,
   getFilteredRowModel,
@@ -23,13 +17,19 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { useDebouncedCallback } from "use-debounce";
-import { FormDialog } from "@/components/shared/FormDialog";
-import { useStoreStockStore } from "@/stores/useStoreStockStore";
-import { toast } from "react-hot-toast";
 import { columns } from "./columns";
-import StoreForm, { StoreFormValues } from "./StoreForm";
+import { toast } from "react-hot-toast";
 import api, { endpoints } from "@/lib/api";
+import { Input } from "@/components/ui/Input";
+import { Button } from "@/components/ui/Button";
+import { useEffect, useRef, useState } from "react";
+import { useDebouncedCallback } from "use-debounce";
+import StoreForm, { StoreFormValues } from "./StoreForm";
+import { FormDialog } from "@/components/shared/FormDialog";
+import { exportTableToPDF, exportToExcel } from "@/lib/export";
+import { useStoreStockStore } from "@/stores/useStoreStockStore";
+import { DataTable } from "@/components/ui/data-table/DataTable";
+import DeleteConfirmation from "@/components/shared/DeleteConfirmation";
 
 function StockStorePage() {
   const [isLoading, setIsLoading] = useState(true);
@@ -103,7 +103,7 @@ function StockStorePage() {
   const onFormSubmit = async (values: StoreFormValues, { resetForm }: any) => {
     try {
       setIsLoading(true);
-      const { data } = await api.post("/store-stocks", values);
+      const { data } = await api.post(endpoints.stocks, values);
       await new Promise((resolve) => setTimeout(resolve, 1500));
 
       addStoreStocks([data]);
@@ -172,19 +172,22 @@ function StockStorePage() {
             <FormDialog
               open={dialogOpen}
               onOpenChange={setDialogOpen}
+              className="p-0 max-w-md"
               form={
                 <StoreForm
                   initialValues={{
                     itemName: "",
                     storeIn: 0,
                     storeOut: 0,
-                    previous: 0,
+                    carried: 0,
                     current: 0,
+                    unit: "",
                   }}
+                  setDialogOpen={setDialogOpen}
                   onSubmit={onFormSubmit}
-                  title="Add Store Item"
+                  title="Add new store stock"
                   description="Add a new item to the store inventory"
-                  buttonText="Add Item"
+                  buttonText="Create stock"
                   isLoading={isLoading}
                   loadingText="Creating"
                 />

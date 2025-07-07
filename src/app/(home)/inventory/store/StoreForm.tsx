@@ -1,23 +1,33 @@
 "use client";
 
 import * as Yup from "yup";
-import { ListChecksIcon } from "lucide-react";
+import { Save } from "lucide-react";
 import { Input } from "@/components/ui/Input";
 import { Label } from "@/components/ui/Label";
 import { Button } from "@/components/ui/Button";
 import { ErrorMessage, FormikProvider, useFormik } from "formik";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/Card";
 
 export interface StoreFormValues {
   itemName: string;
   storeIn: number;
   storeOut: number;
-  previous: number;
+  carried: number;
   current: number;
+  unit: string;
 }
 
 interface Props {
   initialValues: StoreFormValues;
   onSubmit: (values: StoreFormValues, helpers: any) => void;
+  setDialogOpen: (open: boolean) => void;
   title?: string;
   description?: string;
   buttonText?: string;
@@ -27,10 +37,11 @@ interface Props {
 
 const validationSchema = Yup.object({
   itemName: Yup.string().required("Item name is required"),
-  storeIn: Yup.number().required("Quantity is required").min(0),
-  storeOut: Yup.number().required("Received is required").min(0),
-  previous: Yup.number().required("Remaining is required").min(0),
-  current: Yup.number().required("Current is required").min(0),
+  storeIn: Yup.number().required("Incomming stock is required").min(0),
+  storeOut: Yup.number().required("Outgoing stock is required").min(0),
+  carried: Yup.number().required("Previous stock is required").min(0),
+  current: Yup.number().required("Current stock is required").min(0),
+  unit: Yup.string().required("Unit is required"),
 });
 
 export default function StoreForm({
@@ -41,6 +52,7 @@ export default function StoreForm({
   buttonText = "Add Stocks",
   isLoading = false,
   loadingText = "Creating",
+  setDialogOpen,
 }: Props) {
   const formik = useFormik({
     initialValues,
@@ -48,81 +60,171 @@ export default function StoreForm({
     onSubmit,
     enableReinitialize: true,
   });
+
+  console.log(formik.errors);
   return (
-    <div className="flex w-full flex-col gap-6">
-      <div className="flex flex-col">
-        <h2 className="text-lg font-semibold">{title}</h2>
-        <p className="text-sm">{description}</p>
-      </div>
-
-      <form onSubmit={formik.handleSubmit} className="w-full space-y-4">
-        <FormikProvider value={formik}>
-          <div>
-            <Label required htmlFor="itemName">
-              Item name
-            </Label>
-            <Input type="text" {...formik.getFieldProps("itemName")} />
-            <ErrorMessage
-              name="itemName"
-              component="p"
-              className="text-xs text-rose-500"
-            />
-          </div>
-
-          <div>
-            <Label required htmlFor="storeIn">
-              Store In
-            </Label>
-            <Input type="number" {...formik.getFieldProps("storeIn")} />
-            <ErrorMessage
-              name="storeIn"
-              component="p"
-              className="text-xs text-rose-500"
-            />
-          </div>
-
-          <div>
-            <Label htmlFor="storeOut">Store Out</Label>
-            <Input type="number" {...formik.getFieldProps("storeOut")} />
-            <ErrorMessage
-              name="storeOut"
-              component="p"
-              className="text-xs text-rose-500"
-            />
-          </div>
-
-          <div>
-            <Label htmlFor="carried">Previous stocks</Label>
-            <Input type="number" {...formik.getFieldProps("carried")} />
-            <ErrorMessage
-              name="carried"
-              component="p"
-              className="text-xs text-rose-500"
-            />
-          </div>
-
-          <div>
-            <Label htmlFor="current">Current stocks</Label>
-            <Input type="number" {...formik.getFieldProps("current")} />
-            {formik.touched.current && formik.errors.current && (
-              <div className="text-sm text-red-500">
-                {formik.errors.current}
+    <form onSubmit={formik.handleSubmit}>
+      <Card className="overflow-hidden">
+        <CardHeader>
+          <CardTitle>{title}</CardTitle>
+          <CardDescription>{description}</CardDescription>
+        </CardHeader>
+        <CardContent className="border-t">
+          <FormikProvider value={formik}>
+            <div className="grid gap-2">
+              <div className="space-y-1">
+                <Label required htmlFor="itemName">
+                  Item name
+                </Label>
+                <div className="space-y-0.5">
+                  <Input
+                    type="text"
+                    placeholder="Chicken Curry"
+                    hasError={
+                      formik.touched.itemName &&
+                      formik.errors.itemName !== undefined
+                    }
+                    {...formik.getFieldProps("itemName")}
+                  />
+                  <ErrorMessage
+                    className="text-xs text-rose-600"
+                    name="itemName"
+                    component="p"
+                  />
+                </div>
               </div>
-            )}
-          </div>
 
+              <div className="space-y-1">
+                <Label required htmlFor="storeIn">
+                  Store in
+                </Label>
+                <div className="space-y-0.5">
+                  <Input
+                    type="number"
+                    placeholder="Incomming stocks"
+                    hasError={
+                      formik.touched.storeIn &&
+                      formik.errors.storeIn !== undefined
+                    }
+                    {...formik.getFieldProps("storeIn")}
+                  />
+                  <ErrorMessage
+                    className="text-xs text-rose-600"
+                    name="storeIn"
+                    component="p"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1">
+                <Label required htmlFor="storeOut">
+                  Outgoing stocks
+                </Label>
+                <div className="space-y-0.5">
+                  <Input
+                    type="number"
+                    placeholder="Outgoing stocks"
+                    hasError={
+                      formik.touched.storeOut &&
+                      formik.errors.storeOut !== undefined
+                    }
+                    {...formik.getFieldProps("storeOut")}
+                  />
+                  <ErrorMessage
+                    className="text-xs text-rose-600"
+                    name="storeOut"
+                    component="p"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1">
+                <Label required htmlFor="carried">
+                  Previous stocks
+                </Label>
+                <div className="space-y-0.5">
+                  <Input
+                    type="number"
+                    placeholder="Previous stocks"
+                    hasError={
+                      formik.touched.carried &&
+                      formik.errors.carried !== undefined
+                    }
+                    {...formik.getFieldProps("carried")}
+                  />
+                  <ErrorMessage
+                    className="text-xs text-rose-600"
+                    name="carried"
+                    component="p"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1">
+                <Label required htmlFor="current">
+                  Current stocks
+                </Label>
+                <div className="space-y-0.5">
+                  <Input
+                    type="number"
+                    placeholder="Current stocks"
+                    hasError={
+                      formik.touched.current &&
+                      formik.errors.current !== undefined
+                    }
+                    {...formik.getFieldProps("current")}
+                  />
+                  <ErrorMessage
+                    className="text-xs text-rose-600"
+                    name="current"
+                    component="p"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1">
+                <Label required htmlFor="unit">
+                  Unit
+                </Label>
+                <div className="space-y-0.5">
+                  <Input
+                    type="text"
+                    placeholder="Unit"
+                    hasError={
+                      formik.touched.unit && formik.errors.unit !== undefined
+                    }
+                    {...formik.getFieldProps("unit")}
+                  />
+                  <ErrorMessage
+                    className="text-xs text-rose-600"
+                    name="unit"
+                    component="p"
+                  />
+                </div>
+              </div>
+            </div>
+          </FormikProvider>
+        </CardContent>
+        <CardFooter className="grid grid-cols-3 gap-3 border-t pt-4 bg-gray-100">
           <Button
+            onClick={() => setDialogOpen(false)}
+            type="button"
+            className="col-span-1"
+            variant="secondary"
+          >
+            Cancel
+          </Button>
+          <Button
+            type="submit"
+            className="col-span-2"
             isLoading={isLoading}
             loadingText={loadingText}
-            disabled={isLoading}
-            type="submit"
-            className="w-full"
           >
-            <ListChecksIcon size={16} />
+            <Save size={16} />
             {buttonText}
           </Button>
-        </FormikProvider>
-      </form>
-    </div>
+        </CardFooter>
+      </Card>
+    </form>
   );
 }

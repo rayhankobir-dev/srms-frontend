@@ -2,7 +2,6 @@
 
 import * as yup from "yup";
 import Link from "next/link";
-import Cookie from "js-cookie";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { ROLE } from "@/constants";
@@ -33,7 +32,6 @@ function LoginForm() {
     try {
       setIsLoading(true);
       const { data } = await api.post(endpoints.login, values);
-      Cookie.set("token", data.token);
       login(data.user, data.token);
       await new Promise((resolve) => setTimeout(resolve, 1500));
       if (data.user.role === ROLE.STAFF) {

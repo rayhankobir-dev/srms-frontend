@@ -3,19 +3,21 @@ import {
   AlertDialogTrigger,
   AlertDialogContent,
   AlertDialogTitle,
-} from "@/components/ui/AlertDialog"
-import { X } from "lucide-react"
-import { ReactNode } from "react"
+} from "@/components/ui/AlertDialog";
+import { X } from "lucide-react";
+import { ReactNode } from "react";
 
 type FormDialogProps = {
-  children: ReactNode
-  title?: string
-  form: ReactNode
-  open: boolean
-  onOpenChange: (open: boolean) => void
-}
+  className?: string;
+  children: ReactNode;
+  title?: string;
+  form: ReactNode;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+};
 
 export function FormDialog({
+  className,
   children,
   form,
   open,
@@ -24,7 +26,7 @@ export function FormDialog({
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogTrigger asChild>{children}</AlertDialogTrigger>
-      <AlertDialogContent>
+      <AlertDialogContent className={className}>
         <AlertDialogTitle className="hidden" />
         <button
           onClick={() => onOpenChange(false)}
@@ -35,5 +37,5 @@ export function FormDialog({
         {form}
       </AlertDialogContent>
     </AlertDialog>
-  )
+  );
 }

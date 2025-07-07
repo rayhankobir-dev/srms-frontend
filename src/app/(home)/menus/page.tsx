@@ -1,21 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/no-unescaped-entities */
 "use client";
-
-import { Input } from "@/components/ui/Input";
-import { Button, buttonVariants } from "@/components/ui/Button";
-import { DataTable } from "@/components/ui/data-table/DataTable";
-import DeleteConfirmation from "@/components/shared/DeleteConfirmation";
-import {
-  Calendar1,
-  FileSpreadsheet,
-  Plus,
-  Printer,
-  Trash2,
-  X,
-} from "lucide-react";
-import { exportTableToPDF, exportToExcel } from "@/lib/export";
-import { useEffect, useRef, useState } from "react";
 import {
   getCoreRowModel,
   getFilteredRowModel,
@@ -23,12 +8,18 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { useDebouncedCallback } from "use-debounce";
-import { useStoreStockStore } from "@/stores/useStoreStockStore";
-import { toast } from "react-hot-toast";
-import { columns } from "./columns";
-import api, { endpoints } from "@/lib/api";
 import Link from "next/link";
+import { columns } from "./columns";
+import { toast } from "react-hot-toast";
+import api, { endpoints } from "@/lib/api";
+import { Input } from "@/components/ui/Input";
+import { Plus, Trash2, X } from "lucide-react";
+import { useDebouncedCallback } from "use-debounce";
+import { useEffect, useRef, useState } from "react";
+import { useStoreStockStore } from "@/stores/useStoreStockStore";
+import { Button, buttonVariants } from "@/components/ui/Button";
+import { DataTable } from "@/components/ui/data-table/DataTable";
+import DeleteConfirmation from "@/components/shared/DeleteConfirmation";
 
 function MenusPage() {
   const [isLoading, setIsLoading] = useState(true);
@@ -118,10 +109,8 @@ function MenusPage() {
   return (
     <main className="space-y-3.5">
       <section className="px-4">
-        <h1 className="text-lg font-semibold">Stock Store</h1>
-        <p className="max-w-2xl text-sm">
-          Manage your store's stock inventory. Search by item name or category.
-        </p>
+        <h1 className="text-lg font-semibold">Restaurant menus</h1>
+        <p className="max-w-2xl text-sm">Menus must be updated regularly.</p>
       </section>
 
       <section className="flex w-full flex-col gap-3.5">
@@ -157,26 +146,8 @@ function MenusPage() {
               href="/menus/create"
             >
               <Plus size={18} />
-              Add
+              Create Menu
             </Link>
-
-            <Button
-              onClick={() => exportTableToPDF(storeStocks, columns)}
-              variant="secondary"
-            >
-              <Printer className="text-primary" size={18} />
-            </Button>
-
-            <Button
-              onClick={() => exportToExcel(storeStocks)}
-              variant="secondary"
-            >
-              <FileSpreadsheet className="text-green-700" size={18} />
-            </Button>
-
-            <Button variant="secondary">
-              <Calendar1 size={18} />
-            </Button>
           </div>
         </div>
 

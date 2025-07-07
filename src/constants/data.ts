@@ -48,3 +48,10 @@ export const roles = [
   { label: "Manager", value: "MANAGER" },
   { label: "Admin", value: "ADMIN" },
 ];
+
+export const meals = [
+  { label: "Breakfast", value: "BREAKFAST" },
+  { label: "Lunch", value: "LUNCH" },
+  { label: "Supper", value: "SUPPER" },
+  { label: "Dinner", value: "DINNER" },
+];

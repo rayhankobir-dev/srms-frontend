@@ -17,6 +17,7 @@ export const endpoints = {
   settings: "/settings",
   orders: "/orders",
   stocks: "/stocks",
+  menus: "/menus",
 };
 
 const api = axios.create({
