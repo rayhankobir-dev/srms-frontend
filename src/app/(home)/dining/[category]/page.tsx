@@ -1,56 +1,84 @@
-"use client"
-import CafeTable from "@/components/shared/CafeTable"
-import { Button } from "@/components/ui/Button"
-import { Plus } from "lucide-react"
-import { useParams } from "next/navigation"
-import React from "react"
+"use client";
+
+import Link from "next/link";
+import { cx } from "@/lib/utils";
+import { ITable } from "@/types";
+import { Table2 } from "lucide-react";
+import api, { endpoints } from "@/lib/api";
+import { useParams } from "next/navigation";
+import React, { useEffect, useState } from "react";
+import { Table } from "../../settings/TableSettings";
+import { Loader } from "@/components/ui/LoadingScreen";
+import { buttonVariants } from "@/components/ui/Button";
+import { Card, CardContent, CardHeader } from "@/components/ui/Card";
 
 function BreakfastPage() {
-  const params = useParams()
-  const tables = [
-    {
-      name: "Table 1",
-    },
-    {
-      name: "Table 2",
-    },
-    {
-      name: "Table 3",
-    },
-    {
-      name: "Table 4",
-    },
-    {
-      name: "Table 5",
-    },
-    {
-      name: "Table 6",
-    },
-  ]
+  const [isLoading, setIsLoading] = useState(false);
+  const [tables, setTables] = useState<ITable[]>([]);
+  const params = useParams();
 
-  const addTable = async () => {
-    alert("Added")
-  }
+  useEffect(() => {
+    const fetchTables = async () => {
+      try {
+        setIsLoading(true);
+        const { data } = await api.get(endpoints.tables);
+        setTables(data);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchTables();
+  }, []);
 
   return (
     <div className="px-4">
-      <section className="space-y-4">
-        <div>
-          <h2 className="text-xl font-medium capitalize">{params.category}</h2>
-          <p className="font-light">Please make sure right table</p>
-        </div>
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
-          {tables.map((table) => (
-            <CafeTable key={table.name} />
-          ))}
-          <Button onClick={addTable} variant="secondary" className="gap-2">
-            <Plus size={30} />
-            <span className="text-lg">Add Table</span>
-          </Button>
-        </div>
-      </section>
+      <Card>
+        <CardHeader>
+          <section className="flex justify-between items-center">
+            <div>
+              <h2 className="text-xl font-medium capitalize">
+                {params.category}
+              </h2>
+              <p className="font-light">Please make sure right table</p>
+            </div>
+
+            <div>
+              <Link
+                className={cx(buttonVariants({ variant: "secondary" }))}
+                href="/settings"
+              >
+                <Table2 size={16} />
+                Manage tables
+              </Link>
+            </div>
+          </section>
+        </CardHeader>
+
+        <CardContent className="border-t pt-4">
+          {isLoading ? (
+            <div className="min-h-32 flex justify-center items-center">
+              <Loader />
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
+              {tables.map((table, index) => (
+                <Table
+                  href={`/dining/${params.category}/${table._id}`}
+                  isEditMode={false}
+                  key={index}
+                  table={table}
+                  serial={String(index + 1)}
+                />
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
-  )
+  );
 }
 
-export default BreakfastPage
+export default BreakfastPage;

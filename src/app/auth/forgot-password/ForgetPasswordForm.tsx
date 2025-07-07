@@ -1,26 +1,26 @@
-"use client"
+"use client";
 
-import * as yup from "yup"
-import Link from "next/link"
-import { Mail } from "lucide-react"
-import { Input } from "@/components/ui/Input"
-import { Label } from "@/components/ui/Label"
-import { Button } from "@/components/ui/Button"
-import { ErrorMessage, FormikProvider, useFormik } from "formik"
-import api from "@/lib/api"
-import toast from "react-hot-toast"
-import { useState } from "react"
-import Spinner from "@/components/shared/Spinner"
+import * as yup from "yup";
+import Link from "next/link";
+import { Mail } from "lucide-react";
+import { Input } from "@/components/ui/Input";
+import { Label } from "@/components/ui/Label";
+import { Button } from "@/components/ui/Button";
+import { ErrorMessage, FormikProvider, useFormik } from "formik";
+import api, { endpoints } from "@/lib/api";
+import toast from "react-hot-toast";
+import { useState } from "react";
+import Spinner from "@/components/shared/Spinner";
 
 const emailSchema = yup.object({
   email: yup
     .string()
     .email("Invalid email format")
     .required("Email is required"),
-})
+});
 
 function ForgetPasswordForm() {
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(false);
   const formik = useFormik({
     initialValues: {
       email: "",
@@ -28,18 +28,18 @@ function ForgetPasswordForm() {
     validationSchema: emailSchema,
     onSubmit: async (values, { resetForm }) => {
       try {
-        setIsLoading(true)
-        const { data } = await api.post("/users/forget-password", values)
-        await new Promise((resolve) => setTimeout(resolve, 1000))
-        toast.success(data.message)
-        resetForm()
+        setIsLoading(true);
+        const { data } = await api.post(endpoints.forgetPassword, values);
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+        toast.success(data.message);
+        resetForm();
       } catch (error: any) {
-        toast.error(error.response.message || error.message)
+        toast.error(error.response.message || error.message);
       } finally {
-        setIsLoading(false)
+        setIsLoading(false);
       }
     },
-  })
+  });
   return (
     <form className="grid gap-6" onSubmit={formik.handleSubmit}>
       <FormikProvider value={formik}>
@@ -93,7 +93,7 @@ function ForgetPasswordForm() {
         </Link>
       </div>
     </form>
-  )
+  );
 }
 
-export default ForgetPasswordForm
+export default ForgetPasswordForm;

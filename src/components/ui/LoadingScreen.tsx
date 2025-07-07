@@ -1,3 +1,5 @@
+import { cx } from "@/lib/utils";
+
 export default function LoadingScreen() {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-background">
@@ -24,12 +26,12 @@ export default function LoadingScreen() {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
-export function Loader() {
+export function Loader({ className = "" }: { className?: string }) {
   return (
-    <div className="h-20 w-20 scale-110">
+    <div className={cx("h-20 w-20 scale-110", className)}>
       <div className="box box-1">
         <div className="side-left bg-primary"></div>
         <div className="side-right bg-primary/90"></div>
@@ -51,5 +53,5 @@ export function Loader() {
         <div className="side-top bg-primary/50"></div>
       </div>
     </div>
-  )
+  );
 }

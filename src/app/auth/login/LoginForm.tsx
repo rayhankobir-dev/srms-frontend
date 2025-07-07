@@ -1,18 +1,19 @@
-"use client"
+"use client";
 
-import * as yup from "yup"
-import Link from "next/link"
-import toast from "react-hot-toast"
-import { LogIn } from "lucide-react"
-import { useRouter } from "next/navigation"
-import { Input } from "@/components/ui/Input"
-import { Label } from "@/components/ui/Label"
-import { Button } from "@/components/ui/Button"
-import { useAuthStore } from "@/stores/authStore"
-import { ErrorMessage, FormikProvider, useFormik } from "formik"
-import api from "@/lib/api"
-import { useState } from "react"
-import Spinner from "@/components/shared/Spinner"
+import * as yup from "yup";
+import Link from "next/link";
+import { useState } from "react";
+import toast from "react-hot-toast";
+import { ROLE } from "@/constants";
+import { LogIn } from "lucide-react";
+import api, { endpoints } from "@/lib/api";
+import { useRouter } from "next/navigation";
+import { Input } from "@/components/ui/Input";
+import { Label } from "@/components/ui/Label";
+import { Button } from "@/components/ui/Button";
+import { useAuthStore } from "@/stores/authStore";
+import Spinner from "@/components/shared/Spinner";
+import { ErrorMessage, FormikProvider, useFormik } from "formik";
 
 const loginSchema = yup.object({
   email: yup
@@ -20,32 +21,31 @@ const loginSchema = yup.object({
     .email("Invalid email format")
     .required("Email is required"),
   password: yup.string().required("Password is required"),
-})
+});
 
 function LoginForm() {
-  const [isLoading, setIsLoading] = useState(false)
-  const router = useRouter()
-  const { login } = useAuthStore()
+  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
+  const { login } = useAuthStore();
 
   const handleFormSubmit = async (values: any, { resetForm }: any) => {
-  try {
-    setIsLoading(true)
-    const { data } = await api.post("/users/login", values)
-    login(data.user, data.token)
-    resetForm()
-    await new Promise((resolve) => setTimeout(resolve, 1500))
-
-    if (data.user.role === "STUFF") {
-      router.replace("/dining")
-    } else {
-      router.replace("/")
+    try {
+      setIsLoading(true);
+      const { data } = await api.post(endpoints.login, values);
+      login(data.user, data.token);
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+      if (data.user.role === ROLE.STAFF) {
+        router.replace("/dining");
+      } else {
+        router.replace("/");
+      }
+      resetForm();
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message || error.message);
+    } finally {
+      setIsLoading(false);
     }
-  } catch (error: any) {
-    toast.error(error?.response?.data?.message || error.message)
-  } finally {
-    setIsLoading(false)
-  }
-}
+  };
 
   const formik = useFormik({
     initialValues: {
@@ -54,7 +54,7 @@ function LoginForm() {
     },
     validationSchema: loginSchema,
     onSubmit: handleFormSubmit,
-  })
+  });
 
   return (
     <form className="grid gap-6" onSubmit={formik.handleSubmit}>
@@ -66,7 +66,9 @@ function LoginForm() {
               <Input
                 type="email"
                 placeholder="m@example.com"
-                hasError={(formik.touched.email && formik.errors.email) !== undefined}
+                hasError={
+                  (formik.touched.email && formik.errors.email) !== undefined
+                }
                 {...formik.getFieldProps("email")}
               />
               <ErrorMessage
@@ -90,7 +92,10 @@ function LoginForm() {
               <Input
                 type="password"
                 placeholder="******"
-                hasError={(formik.touched.password && formik.errors.password) !== undefined}
+                hasError={
+                  (formik.touched.password && formik.errors.password) !==
+                  undefined
+                }
                 {...formik.getFieldProps("password")}
               />
               <ErrorMessage
@@ -100,14 +105,22 @@ function LoginForm() {
               />
             </div>
           </div>
-          <Button disabled={isLoading} type="submit" className="group w-full gap-2">
-            {isLoading ? <Spinner loadingText="Authenticating"/> : <>
-            Login
-            <LogIn
-              className="duration-300 group-hover:translate-x-1.5"
-              size={14}
-            />
-            </>}
+          <Button
+            disabled={isLoading}
+            type="submit"
+            className="group w-full gap-2"
+          >
+            {isLoading ? (
+              <Spinner loadingText="Authenticating" />
+            ) : (
+              <>
+                Login
+                <LogIn
+                  className="duration-300 group-hover:translate-x-1.5"
+                  size={14}
+                />
+              </>
+            )}
           </Button>
         </div>
       </FormikProvider>
@@ -118,7 +131,7 @@ function LoginForm() {
         </Link>
       </div>
     </form>
-  )
+  );
 }
 
-export default LoginForm
+export default LoginForm;

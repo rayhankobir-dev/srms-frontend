@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable react-hooks/exhaustive-deps */
-"use client"
-import { columns } from "./columns"
-import { Input } from "@/components/ui/Input"
-import { Button } from "@/components/ui/Button"
-import { DataTable } from "@/components/ui/data-table/DataTable"
-import DeleteConfirmation from "@/components/shared/DeleteConfirmation"
+"use client";
+import { columns } from "./columns";
+import { Input } from "@/components/ui/Input";
+import { Button } from "@/components/ui/Button";
+import { DataTable } from "@/components/ui/data-table/DataTable";
+import DeleteConfirmation from "@/components/shared/DeleteConfirmation";
 import {
   Calendar1,
   FileSpreadsheet,
@@ -13,10 +13,10 @@ import {
   Printer,
   Trash2,
   X,
-} from "lucide-react"
-import { exportTableToPDF, exportToExcel } from "@/lib/export"
-import { useEffect, useRef, useState } from "react"
-import { toast } from "react-hot-toast"
+} from "lucide-react";
+import { exportTableToPDF, exportToExcel } from "@/lib/export";
+import { useEffect, useRef, useState } from "react";
+import { toast } from "react-hot-toast";
 import {
   ColumnFiltersState,
   getCoreRowModel,
@@ -24,27 +24,27 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
-} from "@tanstack/react-table"
-import { useDebouncedCallback } from "use-debounce"
-import { FormDialog } from "@/components/shared/FormDialog"
-import RestaurantForm, { RestaurantFormValues } from "./ResturantForm"
-import { useRestaurantStockStore } from "@/stores/useRestorentStockStore"
-import api from "@/lib/api"
+} from "@tanstack/react-table";
+import { useDebouncedCallback } from "use-debounce";
+import { FormDialog } from "@/components/shared/FormDialog";
+import RestaurantForm, { RestaurantFormValues } from "./ResturantForm";
+import { useRestaurantStockStore } from "@/stores/useRestorentStockStore";
+import api, { endpoints } from "@/lib/api";
 
 function StockResturantPage() {
-  const [isLoading, setIsLoading] = useState(true)
-  const [isDeleting, setIsDeleting] = useState(false)
-  const [dialogOpen, setDialogOpen] = useState(false)
-  const [globalFilter, setGlobalFilter] = useState("")
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
-  const [searchTerm, setSearchTerm] = useState(globalFilter)
-  const searchInputRef = useRef<HTMLInputElement>(null)
+  const [isLoading, setIsLoading] = useState(true);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [globalFilter, setGlobalFilter] = useState("");
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [searchTerm, setSearchTerm] = useState(globalFilter);
+  const searchInputRef = useRef<HTMLInputElement>(null);
   const {
     restaurantStocks,
     addRestaurantStocks,
     setRestaurantStocks,
     removeRestaurantStocks,
-  } = useRestaurantStockStore()
+  } = useRestaurantStockStore();
 
   const table = useReactTable({
     data: restaurantStocks,
@@ -68,80 +68,79 @@ function StockResturantPage() {
         pageSize: 10,
       },
     },
-  })
+  });
 
   const handleDeleteSelected = async () => {
-    const selectedRows = table.getSelectedRowModel().rows
-    const selectedIds = selectedRows.map((row) => row.original._id)
+    const selectedRows = table.getSelectedRowModel().rows;
+    const selectedIds = selectedRows.map((row) => row.original._id);
 
     try {
-      setIsDeleting(true)
+      setIsDeleting(true);
       const { data } = await api.delete(`/restaurant-stocks`, {
         data: { ids: selectedIds },
-      })
+      });
 
-      await new Promise((resolve) => setTimeout(resolve, 2000))
-      removeRestaurantStocks(selectedIds)
-      toast.success(data.message)
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+      removeRestaurantStocks(selectedIds);
+      toast.success(data.message);
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || error.message)
+      toast.error(error?.response?.data?.message || error.message);
     } finally {
-      setIsDeleting(false)
+      setIsDeleting(false);
     }
-  }
+  };
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = event.target.value
-    setSearchTerm(value)
-    debouncedSetGlobalFilter(value)
-  }
+    const value = event.target.value;
+    setSearchTerm(value);
+    debouncedSetGlobalFilter(value);
+  };
 
   const debouncedSetGlobalFilter = useDebouncedCallback((value) => {
-    setGlobalFilter(value)
-  }, 300)
+    setGlobalFilter(value);
+  }, 300);
 
   const handleClear = () => {
-    setSearchTerm("")
-    setGlobalFilter("")
-    searchInputRef.current?.focus()
-  }
+    setSearchTerm("");
+    setGlobalFilter("");
+    searchInputRef.current?.focus();
+  };
 
   const onFormSubmit = async (
     values: RestaurantFormValues,
-    { resetForm }: any,
+    { resetForm }: any
   ) => {
     try {
-      setIsLoading(true)
-      const { data } = await api.post("/restaurant-stocks", values)
-      await new Promise((resolve) => setTimeout(resolve, 1500))
+      setIsLoading(true);
+      const { data } = await api.post("/restaurant-stocks", values);
+      await new Promise((resolve) => setTimeout(resolve, 1500));
 
-      addRestaurantStocks([data])
-      resetForm()
-      setDialogOpen(false)
-      toast.success("Item added successfully")
+      addRestaurantStocks([data]);
+      resetForm();
+      setDialogOpen(false);
+      toast.success("Item added successfully");
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || error.message)
+      toast.error(error?.response?.data?.message || error.message);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
-
-  const fetchData = async () => {
-    setIsLoading(true)
-    try {
-      const { data } = await api.get("/restaurant-stocks")
-      await new Promise((resolve) => setTimeout(resolve, 1000))
-      setRestaurantStocks(data)
-    } catch (error: any) {
-      toast.error(error?.response?.data?.message || error.message)
-    } finally {
-      setIsLoading(false)
-    }
-  }
+  };
 
   useEffect(() => {
-    fetchData()
-  }, [])
+    const fetchData = async () => {
+      setIsLoading(true);
+      try {
+        const { data } = await api.get(endpoints.inventory);
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+        setRestaurantStocks(data);
+      } catch (error: any) {
+        toast.error(error?.response?.data?.message || error.message);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
 
   return (
     <main className="space-y-3.5">
@@ -215,7 +214,10 @@ function StockResturantPage() {
             >
               <Printer className="text-primary" size={18} />
             </Button>
-            <Button onClick={() => exportToExcel(restaurantStocks)} variant="secondary">
+            <Button
+              onClick={() => exportToExcel(restaurantStocks)}
+              variant="secondary"
+            >
               <FileSpreadsheet className="text-green-700" size={18} />
             </Button>
             <Button variant="secondary">
@@ -229,7 +231,7 @@ function StockResturantPage() {
         </div>
       </section>
     </main>
-  )
+  );
 }
 
-export default StockResturantPage
+export default StockResturantPage;

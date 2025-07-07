@@ -1,5 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
-"use client"
+"use client";
 import {
   Table,
   TableBody,
@@ -7,9 +7,7 @@ import {
   TableHead,
   TableHeaderCell,
   TableRow,
-} from "../Table"
-import { cx } from "@/lib/utils"
-import { RankingInfo, rankItem } from "@tanstack/match-sorter-utils"
+} from "../Table";
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -21,29 +19,31 @@ import {
   getSortedRowModel,
   Row,
   useReactTable,
-} from "@tanstack/react-table"
-import { useState } from "react"
-import { DataTablePagination } from "./DataTablePagination"
-import { Loader2Icon } from "lucide-react"
+} from "@tanstack/react-table";
+import { cx } from "@/lib/utils";
+import { useState } from "react";
+import { Loader } from "../LoadingScreen";
+import { DataTablePagination } from "./DataTablePagination";
+import { RankingInfo, rankItem } from "@tanstack/match-sorter-utils";
 
 const fuzzyFilter: FilterFn<any> = (
   row: Row<any>,
   columnId: string,
   filterValue: string,
-  addMeta: (meta: { itemRank: RankingInfo }) => void,
+  addMeta: (meta: { itemRank: RankingInfo }) => void
 ) => {
-  const itemRank = rankItem(row.getValue(columnId), filterValue)
+  const itemRank = rankItem(row.getValue(columnId), filterValue);
 
-  addMeta({ itemRank })
+  addMeta({ itemRank });
 
-  return itemRank.passed
-}
+  return itemRank.passed;
+};
 
 interface DataTableProps<TData> {
-  columns?: ColumnDef<TData>[]
-  data?: TData[]
-  table: ReturnType<typeof useReactTable<TData>>
-  isLoading?: boolean
+  columns?: ColumnDef<TData>[];
+  data?: TData[];
+  table: ReturnType<typeof useReactTable<TData>>;
+  isLoading?: boolean;
 }
 
 export function DataTable<TData>({
@@ -52,9 +52,9 @@ export function DataTable<TData>({
   data = [],
   isLoading = false,
 }: DataTableProps<TData>) {
-  const pageSize = 10
-  const [globalFilter, setGlobalFilter] = useState("")
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
+  const pageSize = 10;
+  const [globalFilter, setGlobalFilter] = useState("");
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 
   const defaultTable = useReactTable({
     data,
@@ -80,9 +80,9 @@ export function DataTable<TData>({
     getPaginationRowModel: getPaginationRowModel(),
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
-  })
+  });
 
-  const table = customTable || defaultTable
+  const table = customTable || defaultTable;
 
   return (
     <div className="relative max-w-full space-y-6">
@@ -99,12 +99,12 @@ export function DataTable<TData>({
                     key={header.id}
                     className={cx(
                       "whitespace-nowrap py-2.5 text-sm sm:text-xs",
-                      header.column.columnDef.meta?.className,
+                      header.column.columnDef.meta?.className
                     )}
                   >
                     {flexRender(
                       header.column.columnDef.header,
-                      header.getContext(),
+                      header.getContext()
                     )}
                   </TableHeaderCell>
                 ))}
@@ -120,7 +120,7 @@ export function DataTable<TData>({
                   className="text-center"
                 >
                   <div className="flex w-full flex-col items-center justify-center py-6">
-                    <Loader2Icon className="animate-spin text-primary" />
+                    <Loader className="!h-10 !w-12" />
                   </div>
                 </TableCell>
               </TableRow>
@@ -135,12 +135,12 @@ export function DataTable<TData>({
                       key={cell.id}
                       className={cx(
                         "relative whitespace-nowrap py-2.5 text-gray-600 dark:text-gray-400",
-                        cell.column.columnDef.meta?.className,
+                        cell.column.columnDef.meta?.className
                       )}
                     >
                       {flexRender(
                         cell.column.columnDef.cell,
-                        cell.getContext(),
+                        cell.getContext()
                       )}
                     </TableCell>
                   ))}
@@ -169,5 +169,5 @@ export function DataTable<TData>({
       </div>
       <DataTablePagination table={table} pageSize={pageSize} />
     </div>
-  )
+  );
 }

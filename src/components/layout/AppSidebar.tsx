@@ -1,5 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
-"use client"
+"use client";
 
 import {
   Sidebar,
@@ -12,25 +12,30 @@ import {
   SidebarMenuItem,
   SidebarMenuSub,
   SidebarSubLink,
-} from "@/components/ui/Sidebar"
-import * as React from "react"
-import { UserProfile } from "./UserProfile"
-import { cx, focusRing } from "@/lib/utils"
-import { RiArrowDownSFill } from "@remixicon/react"
+} from "@/components/ui/Sidebar";
 import {
   BookText,
-  ChartBarBigIcon,
   GaugeCircle,
+  MenuSquare,
+  Settings,
+  ShoppingCart,
   Users,
   UtensilsCrossed,
-} from "lucide-react"
-import { usePathname, useRouter } from "next/navigation"
+} from "lucide-react";
+import * as React from "react";
+import { UserProfile } from "./UserProfile";
+import { cx, focusRing } from "@/lib/utils";
+import { RiArrowDownSFill } from "@remixicon/react";
+import { usePathname, useRouter } from "next/navigation";
+import { useAuthStore } from "@/stores/authStore";
+import { ROLE } from "@/constants";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const pathname = usePathname()
-  const router = useRouter()
+  const { user, hasHydrated } = useAuthStore();
+  const pathname = usePathname();
+  const router = useRouter();
 
-  const navigations = [
+  const staffmenus = [
     {
       name: "Dashboard",
       icon: GaugeCircle,
@@ -39,31 +44,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       active: true,
     },
     {
-      name: "Inventory",
-      icon: BookText,
-      notifications: false,
-      active: true,
-      children: [
-        {
-          name: "Inventory Reports",
-          href: "/inventory",
-          active: true,
-        },
-        {
-          name: "Store Stocks",
-          href: "/inventory/store",
-          active: false,
-        },
-        {
-          name: "Resturant Stocks",
-          href: "/inventory/resturant",
-          active: false,
-        },
-      ],
-    },
-    {
-      name: "Dining",
+      name: "Mange Dining",
       icon: UtensilsCrossed,
+      href: "/dining",
       notifications: false,
       active: true,
       children: [
@@ -90,22 +73,87 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       ],
     },
     {
-      name: "Sales",
-      icon: ChartBarBigIcon,
+      name: "Orders",
+      icon: ShoppingCart,
+      href: "/orders",
       notification: false,
       active: false,
+    },
+  ];
+
+  const defaultMenus = [
+    {
+      name: "Dashboard",
+      icon: GaugeCircle,
+      href: "/",
+      notifications: false,
+      active: true,
+    },
+    {
+      name: "Manage Inventory",
+      icon: BookText,
+      notifications: false,
+      active: true,
       children: [
         {
           name: "Reports",
-          href: "/sales",
+          href: "/inventory",
           active: true,
         },
         {
-          name: "Configure",
-          href: "/sales/configure",
+          name: "Store Stocks",
+          href: "/inventory/store",
+          active: false,
+        },
+        {
+          name: "Resturant Stocks",
+          href: "/inventory/resturant",
           active: false,
         },
       ],
+    },
+    {
+      name: "Mange Dining",
+      icon: UtensilsCrossed,
+      href: "/dining",
+      notifications: false,
+      active: true,
+      children: [
+        {
+          name: "Breakfast",
+          href: "/dining/breakfast",
+          active: false,
+        },
+        {
+          name: "Lunch",
+          href: "/dining/lunch",
+          active: false,
+        },
+        {
+          name: "Super",
+          href: "/dining/super",
+          active: false,
+        },
+        {
+          name: "Dinner",
+          href: "/dining/dinner",
+          active: false,
+        },
+      ],
+    },
+    {
+      name: "Menus",
+      icon: MenuSquare,
+      href: "/menus",
+      notification: false,
+      active: false,
+    },
+    {
+      name: "Orders",
+      icon: ShoppingCart,
+      href: "/orders",
+      notification: false,
+      active: false,
     },
     {
       name: "Manage Users",
@@ -120,28 +168,39 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         },
       ],
     },
-  ]
+    {
+      name: "Settings",
+      icon: Settings,
+      href: "/settings",
+      notification: false,
+      active: false,
+    },
+  ];
+
+  const navigations =
+    hasHydrated && user?.role === ROLE.STAFF ? staffmenus : defaultMenus;
 
   const [openMenus, setOpenMenus] = React.useState<string[]>(
-    navigations.map((nav) => nav.name),
-  )
+    navigations.map((nav) => nav.name)
+  );
 
   const toggleMenu = (name: string) => {
     setOpenMenus((prev: string[]) =>
       prev.includes(name)
         ? prev.filter((item: string) => item !== name)
-        : [...prev, name],
-    )
-  }
+        : [...prev, name]
+    );
+  };
 
   const redirectToLink = (href: string) => {
-    router.push(href)
-  }
+    router.push(href);
+  };
 
   const getIsActive = (href: string) => {
-    const isActive = pathname === href || pathname.endsWith(href + "/")
-    return isActive
-  }
+    if (!href) return false;
+    const isActive = pathname === href || pathname.endsWith(href + "/");
+    return isActive;
+  };
 
   return (
     <Sidebar {...props} className="bg-gray-50 dark:bg-gray-925 scrollbar-none">
@@ -166,14 +225,16 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   <button
                     onClick={() => {
                       if (item.href) {
-                        redirectToLink(item.href)
+                        redirectToLink(item.href);
                       } else {
-                        toggleMenu(item.name)
+                        toggleMenu(item.name);
                       }
                     }}
                     className={cx(
                       "flex w-full items-center justify-between gap-x-2.5 rounded-md p-2 text-base text-gray-900 transition hover:bg-gray-200/50 sm:text-sm dark:text-gray-400 hover:dark:bg-gray-900 hover:dark:text-gray-50",
                       focusRing,
+                      getIsActive(item?.href || "") &&
+                        "text-blue-600 bg-gray-100 dark:text-blue-600 dark:bg-gray-900"
                     )}
                   >
                     <div className="flex items-center gap-2.5">
@@ -183,15 +244,17 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                       />
                       {item.name}
                     </div>
-                    <RiArrowDownSFill
-                      className={cx(
-                        openMenus.includes(item.name)
-                          ? "rotate-0"
-                          : "-rotate-90",
-                        "size-5 shrink-0 transform text-gray-400 transition-transform duration-150 ease-in-out dark:text-gray-600",
-                      )}
-                      aria-hidden="true"
-                    />
+                    {item.children && (
+                      <RiArrowDownSFill
+                        className={cx(
+                          openMenus.includes(item.name)
+                            ? "rotate-0"
+                            : "-rotate-90",
+                          "size-5 shrink-0 transform text-gray-400 transition-transform duration-150 ease-in-out dark:text-gray-600"
+                        )}
+                        aria-hidden="true"
+                      />
+                    )}
                   </button>
                   {item.children && openMenus.includes(item.name) && (
                     <SidebarMenuSub>
@@ -219,5 +282,5 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <UserProfile />
       </SidebarFooter>
     </Sidebar>
-  )
+  );
 }

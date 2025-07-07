@@ -1,32 +1,32 @@
 /* eslint-disable @next/next/no-img-element */
-"use client"
-import { siteConfig } from "@/app/siteConfig"
+"use client";
+import { siteConfig } from "@/app/siteConfig";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/Card"
-import { useRouter, useSearchParams } from "next/navigation"
-import React, { useEffect } from "react"
-import ResetPasswordForm from "./ResetPasswordForm"
-import LoadingScreen from "@/components/ui/LoadingScreen"
-import toast from "react-hot-toast"
+} from "@/components/ui/Card";
+import { useRouter, useSearchParams } from "next/navigation";
+import React, { useEffect } from "react";
+import ResetPasswordForm from "./ResetPasswordForm";
+import LoadingScreen from "@/components/ui/LoadingScreen";
+import toast from "react-hot-toast";
 
 function ResetPassword() {
-  const router = useRouter()
-  const params = useSearchParams()
-  const token = params.get("token")
+  const router = useRouter();
+  const params = useSearchParams();
+  const token = params.get("token");
 
   useEffect(() => {
     if (!token) {
-      toast.error("Invalid token, please try again")
-      router.replace("/auth/forgot-password")
+      toast.error("Invalid token, please try again");
+      router.replace("/auth/forgot-password");
     }
-  }, [token, router])
+  }, [token, router]);
 
-  if (!token) return <LoadingScreen />
+  if (!token) return <LoadingScreen />;
 
   return (
     <main className="flex min-h-svh flex-col items-center justify-center gap-6 bg-muted p-6 md:p-10">
@@ -53,7 +53,7 @@ function ResetPassword() {
         </Card>
       </div>
     </main>
-  )
+  );
 }
 
-export default ResetPassword
+export default ResetPassword;

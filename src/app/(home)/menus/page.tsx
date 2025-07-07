@@ -3,7 +3,7 @@
 "use client";
 
 import { Input } from "@/components/ui/Input";
-import { Button } from "@/components/ui/Button";
+import { Button, buttonVariants } from "@/components/ui/Button";
 import { DataTable } from "@/components/ui/data-table/DataTable";
 import DeleteConfirmation from "@/components/shared/DeleteConfirmation";
 import {
@@ -24,21 +24,19 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { useDebouncedCallback } from "use-debounce";
-import { FormDialog } from "@/components/shared/FormDialog";
 import { useStoreStockStore } from "@/stores/useStoreStockStore";
 import { toast } from "react-hot-toast";
 import { columns } from "./columns";
-import StoreForm, { StoreFormValues } from "./StoreForm";
 import api, { endpoints } from "@/lib/api";
+import Link from "next/link";
 
-function StockStorePage() {
+function MenusPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [dialogOpen, setDialogOpen] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const [globalFilter, setGlobalFilter] = useState("");
   const [searchTerm, setSearchTerm] = useState(globalFilter);
-  const { storeStocks, setStoreStocks, addStoreStocks, removeStoreStocks } =
+  const { storeStocks, setStoreStocks, removeStoreStocks } =
     useStoreStockStore();
 
   const table = useReactTable({
@@ -100,28 +98,12 @@ function StockStorePage() {
     searchInputRef.current?.focus();
   };
 
-  const onFormSubmit = async (values: StoreFormValues, { resetForm }: any) => {
-    try {
-      setIsLoading(true);
-      const { data } = await api.post("/store-stocks", values);
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-
-      addStoreStocks([data]);
-      resetForm();
-      setDialogOpen(false);
-      toast.success("Item added successfully");
-    } catch (error: any) {
-      toast.error(error?.response?.data?.message || error.message);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   useEffect(() => {
     const fetchData = async () => {
       try {
         setIsLoading(true);
         const { data } = await api.get(endpoints.stocks);
+        await new Promise((resolve) => setTimeout(resolve, 1000));
         setStoreStocks(data);
       } catch (error: any) {
         toast.error(error?.response?.data?.message || error.message);
@@ -129,13 +111,14 @@ function StockStorePage() {
         setIsLoading(false);
       }
     };
+
     fetchData();
   }, []);
 
   return (
     <main className="space-y-3.5">
       <section className="px-4">
-        <h1 className="text-lg font-semibold">Manage Store Stocks</h1>
+        <h1 className="text-lg font-semibold">Stock Store</h1>
         <p className="max-w-2xl text-sm">
           Manage your store's stock inventory. Search by item name or category.
         </p>
@@ -169,32 +152,13 @@ function StockStorePage() {
               </DeleteConfirmation>
             )}
 
-            <FormDialog
-              open={dialogOpen}
-              onOpenChange={setDialogOpen}
-              form={
-                <StoreForm
-                  initialValues={{
-                    itemName: "",
-                    storeIn: 0,
-                    storeOut: 0,
-                    previous: 0,
-                    current: 0,
-                  }}
-                  onSubmit={onFormSubmit}
-                  title="Add Store Item"
-                  description="Add a new item to the store inventory"
-                  buttonText="Add Item"
-                  isLoading={isLoading}
-                  loadingText="Creating"
-                />
-              }
+            <Link
+              className={buttonVariants({ variant: "secondary" })}
+              href="/menus/create"
             >
-              <Button variant="secondary">
-                <Plus size={18} />
-                Add
-              </Button>
-            </FormDialog>
+              <Plus size={18} />
+              Add
+            </Link>
 
             <Button
               onClick={() => exportTableToPDF(storeStocks, columns)}
@@ -224,4 +188,4 @@ function StockStorePage() {
   );
 }
 
-export default StockStorePage;
+export default MenusPage;

@@ -1,13 +1,27 @@
-import { Loader2Icon } from "lucide-react"
-import React from "react"
+import { cx } from "@/lib/utils";
+import { RiLoader2Fill } from "@remixicon/react";
 
-function Spinner({ loadingText }: { loadingText: string }) {
+type Props = {
+  className?: string;
+  loadingText?: string;
+};
+
+function Spinner({ className, loadingText = "" }: Props) {
   return (
-    <span className="inline-flex items-center gap-1.5">
-      <Loader2Icon className="animate-spin" />
+    <span
+      className={cx(
+        "pointer-events-none flex shrink-0 items-center justify-center gap-1.5",
+        className
+      )}
+    >
+      <RiLoader2Fill
+        className="size-4 shrink-0 animate-spin"
+        aria-hidden="true"
+      />
+      <span className="sr-only">{loadingText ? loadingText : "Loading.."}</span>
       {loadingText}
     </span>
-  )
+  );
 }
 
-export default Spinner
+export default Spinner;

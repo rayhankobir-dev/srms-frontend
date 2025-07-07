@@ -1,16 +1,16 @@
-import { useFormik } from "formik"
-import Link from "next/link"
-import React, { useState } from "react"
-import * as yup from "yup"
-import { Button } from "@/components/ui/Button"
-import { ErrorMessage, FormikProvider } from "formik"
-import api from "@/lib/api"
-import toast from "react-hot-toast"
-import { Input } from "@/components/ui/Input"
-import { Label } from "@/components/ui/Label"
-import { LockKeyhole } from "lucide-react"
-import Spinner from "@/components/shared/Spinner"
-import { useRouter, useSearchParams } from "next/navigation"
+import { useFormik } from "formik";
+import Link from "next/link";
+import React, { useState } from "react";
+import * as yup from "yup";
+import { Button } from "@/components/ui/Button";
+import { ErrorMessage, FormikProvider } from "formik";
+import api, { endpoints } from "@/lib/api";
+import toast from "react-hot-toast";
+import { Input } from "@/components/ui/Input";
+import { Label } from "@/components/ui/Label";
+import { LockKeyhole } from "lucide-react";
+import Spinner from "@/components/shared/Spinner";
+import { useRouter, useSearchParams } from "next/navigation";
 
 const passwordSchema = yup.object({
   password: yup
@@ -21,13 +21,13 @@ const passwordSchema = yup.object({
     .string()
     .oneOf([yup.ref("password")], "Passwords must match")
     .required("Confirm Password is required"),
-})
+});
 
 function ResetPasswordForm() {
-  const [isLoading, setIsLoading] = useState(false)
-  const router = useRouter()
-  const params = useSearchParams()
-  const token = params.get("token")
+  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
+  const params = useSearchParams();
+  const token = params.get("token");
 
   const formik = useFormik({
     initialValues: {
@@ -37,22 +37,22 @@ function ResetPasswordForm() {
     validationSchema: passwordSchema,
     onSubmit: async (values, { resetForm }) => {
       try {
-        setIsLoading(true)
-        const { data } = await api.post("/users/reset-password", {
+        setIsLoading(true);
+        const { data } = await api.post(endpoints.resetPassword, {
           ...values,
           token,
-        })
-        await new Promise((resolve) => setTimeout(resolve, 1000))
-        resetForm()
-        toast.success(data.message)
-        router.replace("/auth/login")
+        });
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+        resetForm();
+        toast.success(data.message);
+        router.replace("/auth/login");
       } catch (error: any) {
-        toast.error(error.response.message || error.message)
+        toast.error(error.response.message || error.message);
       } finally {
-        setIsLoading(false)
+        setIsLoading(false);
       }
     },
-  })
+  });
   return (
     <form className="grid gap-6" onSubmit={formik.handleSubmit}>
       <FormikProvider value={formik}>
@@ -117,7 +117,7 @@ function ResetPasswordForm() {
         </Link>
       </div>
     </form>
-  )
+  );
 }
 
-export default ResetPasswordForm
+export default ResetPasswordForm;

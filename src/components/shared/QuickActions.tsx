@@ -1,18 +1,18 @@
-"use client"
-import { Button } from "../ui/Button"
-import { Donut, EggFried, Ham, LayoutGrid, Soup } from "lucide-react"
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/Popover"
-import Link from "next/link"
+"use client";
+import { Button } from "../ui/Button";
+import { Donut, EggFried, Ham, LayoutGrid, Soup } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/Popover";
+import Link from "next/link";
 
 export default function QuickActions() {
   return (
     <Popover>
       <PopoverTrigger asChild>
         <Button
-          className="h-10 w-10 text-primary [&_svg]:h-5 [&_svg]:w-5"
+          className="h-10 w-10 [&_svg]:h-5 [&_svg]:w-5 text-blue-500"
           variant="ghost"
         >
-          <LayoutGrid className="text-primary" />
+          <LayoutGrid className="text-blue-500" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-56 overflow-hidden p-0">
@@ -48,5 +48,5 @@ export default function QuickActions() {
         </div>
       </PopoverContent>
     </Popover>
-  )
+  );
 }

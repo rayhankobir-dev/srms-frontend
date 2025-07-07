@@ -1,9 +1,9 @@
-import ThemeToggler from "./ThemeToggler"
-import { Breadcrumbs } from "./Breadcrumbs"
-import ScreenToggler from "./ScreenToggler"
-import { SidebarTrigger } from "../ui/Sidebar"
-import QuickActions from "../shared/QuickActions"
-import NotificationPreviewer from "./NotificationPreviewer"
+import ThemeToggler from "./ThemeToggler";
+import { Breadcrumbs } from "./Breadcrumbs";
+import ScreenToggler from "./ScreenToggler";
+import { SidebarTrigger } from "../ui/Sidebar";
+import QuickActions from "../shared/QuickActions";
+import NotificationPreviewer from "./NotificationPreviewer";
 
 function Header() {
   return (
@@ -18,7 +18,7 @@ function Header() {
         <NotificationPreviewer />
       </div>
     </header>
-  )
+  );
 }
 
-export default Header
+export default Header;

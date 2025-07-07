@@ -12,11 +12,10 @@ import {
   Plus,
   Printer,
   Trash2,
-  UserPlus,
   X,
 } from "lucide-react";
 import { exportTableToPDF, exportToExcel } from "@/lib/export";
-import { Fragment, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
 import {
   ColumnFiltersState,
@@ -28,13 +27,10 @@ import {
 } from "@tanstack/react-table";
 import { useDebouncedCallback } from "use-debounce";
 import { FormDialog } from "@/components/shared/FormDialog";
-import UserForm, { UserFormValues } from "./UserForm";
 import { useUserStore } from "@/stores/useUserStore";
 import api, { endpoints } from "@/lib/api";
 import Link from "next/link";
 import { cx } from "@/lib/utils";
-import { useAuthStore } from "@/stores/authStore";
-import { ROLE } from "@/constants";
 
 function UsersPage() {
   const [isFetching, setIsFetching] = useState(true);
@@ -46,7 +42,6 @@ function UsersPage() {
   const [searchTerm, setSearchTerm] = useState(globalFilter);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const { users, addUser, setUsers, removeUser } = useUserStore();
-  const { user } = useAuthStore();
 
   const table = useReactTable({
     data: users,
@@ -109,24 +104,6 @@ function UsersPage() {
     searchInputRef.current?.focus();
   };
 
-  const onFormSubmit = async (values: UserFormValues, { resetForm }: any) => {
-    try {
-      setIsCreating(true);
-      const { data } = await api.post("/users", values);
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-
-      addUser(data);
-      resetForm();
-      setDialogOpen(false);
-      toast.success("User added successfully");
-    } catch (error: any) {
-      const data = error?.response?.data;
-      toast.error(data?.error || data?.message || error.message);
-    } finally {
-      setIsCreating(false);
-    }
-  };
-
   const fetchData = async () => {
     setIsFetching(true);
     try {
@@ -147,9 +124,9 @@ function UsersPage() {
   return (
     <main className="space-y-3.5">
       <section className="px-4">
-        <h1 className="text-lg font-semibold">User Management</h1>
+        <h1 className="text-lg font-semibold">Stock Resturant</h1>
         <p className="max-w-2xl text-sm">
-          Find your users or create users. Search by user name or by role.
+          Find your resturant stocks. Search by item name or by category.
         </p>
       </section>
 
@@ -188,46 +165,25 @@ function UsersPage() {
               </DeleteConfirmation>
             )}
 
-            {user?.role === ROLE.ADMIN && (
-              <Fragment>
-                <FormDialog
-                  open={dialogOpen}
-                  onOpenChange={setDialogOpen}
-                  form={
-                    <UserForm
-                      initialValues={{
-                        firstName: "",
-                        lastName: "",
-                        password: "",
-                        confirmPassword: "",
-                        gender: "",
-                        email: "",
-                        phone: "",
-                        address: "",
-                        role: "",
-                      }}
-                      onSubmit={onFormSubmit}
-                      title="Onboard new User"
-                      description="Add a new item to the inventory"
-                      buttonText="Add User"
-                      isLoading={isCreating}
-                    />
-                  }
-                >
-                  <Button className="px-4" variant="secondary">
-                    <UserPlus size={16} />
-                    Add
-                  </Button>
-                </FormDialog>
-
-                <Button
-                  onClick={() => exportToExcel(users)}
-                  variant="secondary"
-                >
-                  <FileSpreadsheet className="text-green-700" size={18} />
-                </Button>
-              </Fragment>
-            )}
+            <Link
+              className={cx(buttonVariants({ variant: "secondary" }))}
+              href="/users/create"
+            >
+              <Plus size={18} />
+              Add
+            </Link>
+            <Button
+              onClick={() => exportTableToPDF(users, columns)}
+              variant="secondary"
+            >
+              <Printer className="text-primary" size={18} />
+            </Button>
+            <Button onClick={() => exportToExcel(users)} variant="secondary">
+              <FileSpreadsheet className="text-green-700" size={18} />
+            </Button>
+            <Button variant="secondary">
+              <Calendar1 size={18} />
+            </Button>
           </div>
         </div>
 
