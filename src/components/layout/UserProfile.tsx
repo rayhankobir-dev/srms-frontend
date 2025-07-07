@@ -9,11 +9,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "../ui/DropdownMenu";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/Avatar";
-import { BadgeCheck, LogOut, MoreVerticalIcon } from "lucide-react";
-import { useAuthStore } from "@/stores/authStore";
+import Cookie from "js-cookie";
 import api, { endpoints } from "@/lib/api";
 import { useRouter } from "next/navigation";
+import { useAuthStore } from "@/stores/authStore";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/Avatar";
+import { BadgeCheck, LogOut, MoreVerticalIcon } from "lucide-react";
 
 export function UserProfile() {
   const { hasHydrated, user, logout } = useAuthStore();
@@ -30,6 +31,7 @@ export function UserProfile() {
       console.error(error);
     } finally {
       logout();
+      Cookie.remove("token");
     }
   };
   return (
