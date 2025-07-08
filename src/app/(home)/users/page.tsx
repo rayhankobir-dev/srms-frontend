@@ -193,6 +193,7 @@ function UsersPage() {
                 <FormDialog
                   open={dialogOpen}
                   onOpenChange={setDialogOpen}
+                  className="p-0 max-w-lg"
                   form={
                     <UserForm
                       initialValues={{
@@ -207,6 +208,7 @@ function UsersPage() {
                         role: "",
                       }}
                       onSubmit={onFormSubmit}
+                      setDialogOpen={setDialogOpen}
                       title="Onboard new User"
                       description="Add a new item to the inventory"
                       buttonText="Add User"

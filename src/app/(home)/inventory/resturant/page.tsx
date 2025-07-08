@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
@@ -26,29 +25,25 @@ import { Button } from "@/components/ui/Button";
 import { useDebouncedCallback } from "use-debounce";
 import { useEffect, useRef, useState } from "react";
 import { FormDialog } from "@/components/shared/FormDialog";
+import { useInventoryStore } from "@/stores/inventoryStore";
 import { exportTableToPDF, exportToExcel } from "@/lib/export";
 import { DataTable } from "@/components/ui/data-table/DataTable";
 import RestaurantForm, { RestaurantFormValues } from "./ResturantForm";
 import DeleteConfirmation from "@/components/shared/DeleteConfirmation";
-import { useRestaurantStockStore } from "@/stores/useRestorentStockStore";
 
 function StockResturantPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isDeleting, setIsDeleting] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [globalFilter, setGlobalFilter] = useState("");
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [columnFilters] = useState<ColumnFiltersState>([]);
   const [searchTerm, setSearchTerm] = useState(globalFilter);
   const searchInputRef = useRef<HTMLInputElement>(null);
-  const {
-    restaurantStocks,
-    addRestaurantStocks,
-    setRestaurantStocks,
-    removeRestaurantStocks,
-  } = useRestaurantStockStore();
+  const { inventory, setInventory, addInventory, removeInventory } =
+    useInventoryStore();
 
   const table = useReactTable({
-    data: restaurantStocks,
+    data: inventory,
     columns,
     state: {
       globalFilter,
@@ -82,7 +77,7 @@ function StockResturantPage() {
       });
 
       await new Promise((resolve) => setTimeout(resolve, 2000));
-      removeRestaurantStocks(selectedIds);
+      removeInventory(selectedIds);
       toast.success(data.message);
     } catch (error: any) {
       toast.error(error?.response?.data?.message || error.message);
@@ -115,8 +110,7 @@ function StockResturantPage() {
       setIsLoading(true);
       const { data } = await api.post(endpoints.inventory, values);
       await new Promise((resolve) => setTimeout(resolve, 1500));
-
-      addRestaurantStocks([data]);
+      addInventory(data);
       resetForm();
       setDialogOpen(false);
       toast.success("Item added successfully");
@@ -133,7 +127,7 @@ function StockResturantPage() {
       try {
         const { data } = await api.get(endpoints.inventory);
         await new Promise((resolve) => setTimeout(resolve, 1000));
-        setRestaurantStocks(data);
+        setInventory(data);
       } catch (error: any) {
         toast.error(error?.response?.data?.message || error.message);
       } finally {
@@ -213,13 +207,13 @@ function StockResturantPage() {
               </Button>
             </FormDialog>
             <Button
-              onClick={() => exportTableToPDF(restaurantStocks, columns)}
+              onClick={() => exportTableToPDF(inventory, columns)}
               variant="secondary"
             >
               <Printer className="text-primary" size={18} />
             </Button>
             <Button
-              onClick={() => exportToExcel(restaurantStocks)}
+              onClick={() => exportToExcel(inventory)}
               variant="secondary"
             >
               <FileSpreadsheet className="text-green-700" size={18} />

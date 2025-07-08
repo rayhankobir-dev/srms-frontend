@@ -1,22 +1,20 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 "use client";
-import {
-  StoreStockItem,
-  useStoreStockStore,
-} from "@/stores/useStoreStockStore";
-import { DataTableColumnHeader } from "@/components/ui/data-table/DataTableColumnHeader";
-import DeleteConfirmation from "@/components/shared/DeleteConfirmation";
-import { ColumnDef, createColumnHelper } from "@tanstack/react-table";
-import { Checkbox } from "@/components/ui/Checkbox";
-import { Button, buttonVariants } from "@/components/ui/Button";
-import { Trash2, FileEdit } from "lucide-react";
-import toast from "react-hot-toast";
-import { useState } from "react";
 import api from "@/lib/api";
 import Link from "next/link";
 import { cx } from "@/lib/utils";
+import { useState } from "react";
+import toast from "react-hot-toast";
+import { IMenuItem } from "@/types";
+import { Trash2, FileEdit } from "lucide-react";
+import { Checkbox } from "@/components/ui/Checkbox";
+import { Button, buttonVariants } from "@/components/ui/Button";
+import { ColumnDef, createColumnHelper } from "@tanstack/react-table";
+import DeleteConfirmation from "@/components/shared/DeleteConfirmation";
+import { DataTableColumnHeader } from "@/components/ui/data-table/DataTableColumnHeader";
+import { useStockStore } from "@/stores/stockStore";
 
-const columnHelper = createColumnHelper<StoreStockItem>();
+const columnHelper = createColumnHelper<IMenuItem>();
 
 export const columns = [
   columnHelper.display({
@@ -47,28 +45,28 @@ export const columns = [
     cell: (info) => info.getValue(),
     enableSorting: true,
   }),
-  columnHelper.accessor("storeIn", {
+  columnHelper.accessor("date", {
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Store In" />
     ),
     cell: (info) => info.getValue(),
     enableSorting: true,
   }),
-  columnHelper.accessor("storeOut", {
+  columnHelper.accessor("linkedInventory", {
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Store Out" />
     ),
     cell: (info) => info.getValue(),
     enableSorting: true,
   }),
-  columnHelper.accessor("previous", {
+  columnHelper.accessor("thumbnail", {
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Remaining Stock" />
     ),
     cell: (info) => info.getValue(),
     enableSorting: true,
   }),
-  columnHelper.accessor("current", {
+  columnHelper.accessor("meal", {
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Current Stock" />
     ),
@@ -80,7 +78,7 @@ export const columns = [
     header: () => <div className="w-full text-center">Actions</div>,
     cell: ({ row }) => {
       const [isDeleting, setIsDeleting] = useState(false);
-      const { removeStoreStocks } = useStoreStockStore();
+      const { removeStocks } = useStockStore();
 
       const handleDelete = async (id: string) => {
         try {
@@ -90,7 +88,7 @@ export const columns = [
           });
 
           await new Promise((resolve) => setTimeout(resolve, 2000));
-          removeStoreStocks([id]);
+          removeStocks([id]);
           toast.success(data.message);
         } catch (error: any) {
           toast.error(error?.response?.data?.message || error.message);
@@ -122,4 +120,4 @@ export const columns = [
       );
     },
   }),
-] as ColumnDef<StoreStockItem>[];
+] as ColumnDef<IMenuItem>[];

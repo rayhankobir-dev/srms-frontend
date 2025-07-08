@@ -1,21 +1,19 @@
 /* eslint-disable react-hooks/rules-of-hooks */
-import { DataTableColumnHeader } from "@/components/ui/data-table/DataTableColumnHeader";
+import api, { endpoints } from "@/lib/api";
+import { useState } from "react";
+import toast from "react-hot-toast";
+import { IInventory } from "@/types";
+import { Trash2, FileEdit } from "lucide-react";
+import { Button } from "@/components/ui/Button";
+import { Checkbox } from "@/components/ui/Checkbox";
+import { FormDialog } from "@/components/shared/FormDialog";
+import { useInventoryStore } from "@/stores/inventoryStore";
 import { ColumnDef, createColumnHelper } from "@tanstack/react-table";
 import RestaurantForm, { RestaurantFormValues } from "./ResturantForm";
 import DeleteConfirmation from "@/components/shared/DeleteConfirmation";
-import { FormDialog } from "@/components/shared/FormDialog";
-import { Checkbox } from "@/components/ui/Checkbox";
-import { Button } from "@/components/ui/Button";
-import { Trash2, FileEdit } from "lucide-react";
-import toast from "react-hot-toast";
-import { useState } from "react";
-import {
-  StockItem,
-  useRestaurantStockStore,
-} from "@/stores/useRestorentStockStore";
-import api from "@/lib/api";
+import { DataTableColumnHeader } from "@/components/ui/data-table/DataTableColumnHeader";
 
-const columnHelper = createColumnHelper<StockItem>();
+const columnHelper = createColumnHelper<IInventory>();
 
 export const columns = [
   columnHelper.display({
@@ -50,28 +48,48 @@ export const columns = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="New Stock" />
     ),
-    cell: (info) => info.getValue(),
+    cell: (info) => (
+      <div>
+        {info.getValue()}{" "}
+        <span className="text-xs text-gray-500">{info.row.original.unit}</span>
+      </div>
+    ),
     enableSorting: true,
   }),
   columnHelper.accessor("cooked", {
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Cooked" />
     ),
-    cell: (info) => info.getValue(),
+    cell: (info) => (
+      <div>
+        {info.getValue()}{" "}
+        <span className="text-xs text-gray-500">{info.row.original.unit}</span>
+      </div>
+    ),
     enableSorting: true,
   }),
   columnHelper.accessor("sold", {
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Sales" />
     ),
-    cell: (info) => info.getValue(),
+    cell: (info) => (
+      <div>
+        {info.getValue()}{" "}
+        <span className="text-xs text-gray-500">{info.row.original.unit}</span>
+      </div>
+    ),
     enableSorting: true,
   }),
   columnHelper.accessor("inStock", {
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="In Stock" />
     ),
-    cell: (info) => info.getValue(),
+    cell: (info) => (
+      <div>
+        {info.getValue()}{" "}
+        <span className="text-xs text-gray-500">{info.row.original.unit}</span>
+      </div>
+    ),
     enableSorting: true,
   }),
   columnHelper.display({
@@ -81,8 +99,7 @@ export const columns = [
       const [dialogOpen, setDialogOpen] = useState(false);
       const [isUpdating, setIsUpdating] = useState(false);
       const [isDeleting, setIsDeleting] = useState(false);
-      const { updateRestaurantStocks, removeRestaurantStocks } =
-        useRestaurantStockStore();
+      const { updateInventory, removeInventory } = useInventoryStore();
 
       const onFormSubmit = async (
         values: RestaurantFormValues,
@@ -91,11 +108,11 @@ export const columns = [
         try {
           setIsUpdating(true);
           const { data } = await api.put(
-            `/restaurant-stocks/${row.original._id}`,
+            `${endpoints.inventory}/${row.original._id}`,
             values
           );
           await new Promise((resolve) => setTimeout(resolve, 1500));
-          updateRestaurantStocks(row.original._id as string, data);
+          updateInventory(row.original._id, data);
           resetForm();
           setDialogOpen(false);
           toast.success("Item updated successfully");
@@ -114,7 +131,7 @@ export const columns = [
           });
 
           await new Promise((resolve) => setTimeout(resolve, 2000));
-          removeRestaurantStocks([id]);
+          removeInventory([id]);
           toast.success(data.message);
         } catch (error: any) {
           toast.error(error?.response?.data?.message || error.message);
@@ -128,6 +145,7 @@ export const columns = [
           <FormDialog
             open={dialogOpen}
             onOpenChange={setDialogOpen}
+            className="p-0 max-w-md"
             form={
               <RestaurantForm
                 initialValues={row.original}
@@ -164,4 +182,4 @@ export const columns = [
       );
     },
   }),
-] as ColumnDef<StockItem>[];
+] as ColumnDef<IInventory>[];

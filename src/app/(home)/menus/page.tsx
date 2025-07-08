@@ -14,9 +14,9 @@ import { toast } from "react-hot-toast";
 import api, { endpoints } from "@/lib/api";
 import { Input } from "@/components/ui/Input";
 import { Plus, Trash2, X } from "lucide-react";
+import { useMenuStore } from "@/stores/menuStore";
 import { useDebouncedCallback } from "use-debounce";
 import { useEffect, useRef, useState } from "react";
-import { useStoreStockStore } from "@/stores/useStoreStockStore";
 import { Button, buttonVariants } from "@/components/ui/Button";
 import { DataTable } from "@/components/ui/data-table/DataTable";
 import DeleteConfirmation from "@/components/shared/DeleteConfirmation";
@@ -27,11 +27,10 @@ function MenusPage() {
   const searchInputRef = useRef<HTMLInputElement>(null);
   const [globalFilter, setGlobalFilter] = useState("");
   const [searchTerm, setSearchTerm] = useState(globalFilter);
-  const { storeStocks, setStoreStocks, removeStoreStocks } =
-    useStoreStockStore();
+  const { menuItems, setMenuItems, removeMenuItems } = useMenuStore();
 
   const table = useReactTable({
-    data: storeStocks,
+    data: menuItems,
     columns,
     state: {
       globalFilter,
@@ -64,7 +63,7 @@ function MenusPage() {
       });
 
       await new Promise((resolve) => setTimeout(resolve, 2000));
-      removeStoreStocks(selectedIds);
+      removeMenuItems(selectedIds);
       toast.success(data.message);
     } catch (error: any) {
       toast.error(error?.response?.data?.message || error.message);
@@ -95,7 +94,7 @@ function MenusPage() {
         setIsLoading(true);
         const { data } = await api.get(endpoints.stocks);
         await new Promise((resolve) => setTimeout(resolve, 1000));
-        setStoreStocks(data);
+        setMenuItems(data);
       } catch (error: any) {
         toast.error(error?.response?.data?.message || error.message);
       } finally {

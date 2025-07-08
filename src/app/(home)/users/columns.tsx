@@ -170,11 +170,13 @@ export const columns = [
           <FormDialog
             open={dialogOpen}
             onOpenChange={setDialogOpen}
+            className="p-0 max-w-lg"
             form={
               <UserForm
                 initialValues={row.original}
                 onSubmit={onFormSubmit}
-                title="Update User"
+                setDialogOpen={setDialogOpen}
+                title="Update user information"
                 description="Edit user information"
                 buttonText="Update"
                 isLoading={isUpdating}

@@ -1,52 +1,25 @@
-"use client"
-
-import * as React from "react"
-import { Check, ChevronsUpDown, Trash2, Plus } from "lucide-react"
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/Button"
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/Command"
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/Popover"
-import { Input } from "@/components/ui/Input"
-import { Divider } from "../ui/Divider"
-import { useRestaurantStockStore } from "@/stores/useRestorentStockStore"
-
-// const predefinedItems = [
-//   { value: "laptop", label: "Laptop Computer" },
-//   { value: "mouse", label: "Wireless Mouse" },
-//   { value: "keyboard", label: "Mechanical Keyboard" },
-//   { value: "monitor", label: "4K Monitor" },
-//   { value: "headphones", label: "Noise Cancelling Headphones" },
-//   { value: "webcam", label: "HD Webcam" },
-//   { value: "speaker", label: "Bluetooth Speaker" },
-//   { value: "tablet", label: "Tablet Device" },
-//   { value: "phone", label: "Smartphone" },
-//   { value: "charger", label: "USB-C Charger" },
-// ]
+"use client";
+import * as React from "react";
+import { Divider } from "../ui/Divider";
+import { Input } from "@/components/ui/Input";
+import { SelectInput } from "../ui/SelectInput";
+import { Button } from "@/components/ui/Button";
+import { Check, Trash2, Plus } from "lucide-react";
+import { useInventoryStore } from "@/stores/inventoryStore";
 
 interface InvoiceItem {
-  id: string
-  name: string
-  description: string
-  quantity: number
-  price: number
+  id: string;
+  name: string;
+  description: string;
+  quantity: number;
+  price: number;
 }
 
 export default function InvoiceForm() {
-  const [items, setItems] = React.useState<InvoiceItem[]>([])
-
-  const [discount, setDiscount] = React.useState(1)
-  const [tax, setTax] = React.useState(0)
+  const [items, setItems] = React.useState<InvoiceItem[]>([]);
+  const [discount, setDiscount] = React.useState(1);
+  const { inventory } = useInventoryStore();
+  const [tax, setTax] = React.useState(0);
 
   const addItem = () => {
     const newItem: InvoiceItem = {
@@ -55,33 +28,31 @@ export default function InvoiceForm() {
       description: "",
       quantity: 1,
       price: 1.0,
-    }
-    setItems([...items, newItem])
-  }
+    };
+    setItems([...items, newItem]);
+  };
 
   const removeItem = (id: string) => {
-    setItems(items.filter((item) => item.id !== id))
-  }
+    setItems(items.filter((item) => item.id !== id));
+  };
 
   const updateItem = (
     id: string,
     field: keyof InvoiceItem,
-    value: string | number,
+    value: string | number
   ) => {
     setItems(
-      items.map((item) =>
-        item.id === id ? { ...item, [field]: value } : item,
-      ),
-    )
-  }
+      items.map((item) => (item.id === id ? { ...item, [field]: value } : item))
+    );
+  };
 
   const subtotal = items.reduce(
     (sum, item) => sum + item.quantity * item.price,
-    0,
-  )
-  const discountAmount = (subtotal * discount) / 100
-  const taxAmount = ((subtotal - discountAmount) * tax) / 100
-  const grandTotal = subtotal - discountAmount + taxAmount
+    0
+  );
+  const discountAmount = (subtotal * discount) / 100;
+  const taxAmount = ((subtotal - discountAmount) * tax) / 100;
+  const grandTotal = subtotal - discountAmount + taxAmount;
 
   return (
     <div className="relative">
@@ -114,11 +85,14 @@ export default function InvoiceForm() {
               <tr key={item.id} className="border-b">
                 <td className="px-2 py-4 pl-4">{index + 1}</td>
                 <td className="px-2 py-4">
-                  <ItemCombobox
+                  <SelectInput
+                    placeholder="Select item"
+                    options={inventory.map((item) => ({
+                      label: item.itemName,
+                      value: item.itemName,
+                    }))}
                     value={item.name}
-                    onValueChange={(value) =>
-                      updateItem(item.id, "name", value)
-                    }
+                    onChange={(value) => updateItem(item.id, "name", value)}
                   />
                 </td>
                 <td className="px-2 py-4">
@@ -130,7 +104,7 @@ export default function InvoiceForm() {
                       updateItem(
                         item.id,
                         "quantity",
-                        Number.parseInt(e.target.value) || 1,
+                        Number.parseInt(e.target.value) || 1
                       )
                     }
                   />
@@ -234,95 +208,5 @@ export default function InvoiceForm() {
         </div>
       </div>
     </div>
-  )
-}
-
-function ItemCombobox({
-  value,
-  onValueChange,
-}: {
-  value: string
-  onValueChange: (value: string) => void
-}) {
-  const [open, setOpen] = React.useState(false)
-  const [searchValue, setSearchValue] = React.useState("")
-  const { restaurantStocks } = useRestaurantStockStore()
-
-  const filteredItems = restaurantStocks.filter((item) =>
-    item.itemName.toLowerCase().includes(searchValue.toLowerCase()),
-  )
-
-  return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <Button
-          variant="secondary"
-          role="combobox"
-          aria-expanded={open}
-          className="h-11 w-full justify-between"
-        >
-          {value || "Choose item"}
-          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent className="w-full p-0">
-        <Command>
-          <CommandInput
-            placeholder="Search items..."
-            value={searchValue}
-            onValueChange={setSearchValue}
-          />
-          <CommandList>
-            <CommandEmpty>
-              <div className="p-2">
-                <p className="mb-2 text-sm text-muted-foreground">
-                  No items found.
-                </p>
-                {searchValue && (
-                  <Button
-                    variant="ghost"
-                    className="w-full justify-start"
-                    onClick={() => {
-                      onValueChange(searchValue)
-                      setOpen(false)
-                      setSearchValue("")
-                    }}
-                  >
-                    <Plus className="mr-2 h-4 w-4" />
-                    Add &quot;{searchValue}&quot;
-                  </Button>
-                )}
-              </div>
-            </CommandEmpty>
-            <CommandGroup>
-              {filteredItems.map((item) => (
-                <CommandItem
-                  key={item._id}
-                  value={item._id}
-                  onSelect={() => {
-                    onValueChange(item.itemName)
-                    setOpen(false)
-                    setSearchValue("")
-                  }}
-                >
-                  <Check
-                    className={cn(
-                      "mr-2 h-4 w-4",
-                      value === item.itemName ? "opacity-100" : "opacity-0",
-                    )}
-                  />
-                  {item.itemName}
-                </CommandItem>
-              ))}
-              {searchValue &&
-                !filteredItems.some(
-                  (item) =>
-                    item.itemName.toLowerCase() === searchValue.toLowerCase(),
-                ) && <span>No results found</span>}
-            </CommandGroup>
-          </CommandList>
-        </Command>
-      </PopoverContent>
-    </Popover>
-  )
+  );
 }

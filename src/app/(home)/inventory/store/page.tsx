@@ -27,9 +27,9 @@ import { useDebouncedCallback } from "use-debounce";
 import StoreForm, { StoreFormValues } from "./StoreForm";
 import { FormDialog } from "@/components/shared/FormDialog";
 import { exportTableToPDF, exportToExcel } from "@/lib/export";
-import { useStoreStockStore } from "@/stores/useStoreStockStore";
 import { DataTable } from "@/components/ui/data-table/DataTable";
 import DeleteConfirmation from "@/components/shared/DeleteConfirmation";
+import { useStockStore } from "@/stores/stockStore";
 
 function StockStorePage() {
   const [isLoading, setIsLoading] = useState(true);
@@ -38,11 +38,10 @@ function StockStorePage() {
   const searchInputRef = useRef<HTMLInputElement>(null);
   const [globalFilter, setGlobalFilter] = useState("");
   const [searchTerm, setSearchTerm] = useState(globalFilter);
-  const { storeStocks, setStoreStocks, addStoreStocks, removeStoreStocks } =
-    useStoreStockStore();
+  const { stocks, setStocks, addStocks, removeStocks } = useStockStore();
 
   const table = useReactTable({
-    data: storeStocks,
+    data: stocks,
     columns,
     state: {
       globalFilter,
@@ -75,7 +74,7 @@ function StockStorePage() {
       });
 
       await new Promise((resolve) => setTimeout(resolve, 2000));
-      removeStoreStocks(selectedIds);
+      removeStocks(selectedIds);
       toast.success(data.message);
     } catch (error: any) {
       toast.error(error?.response?.data?.message || error.message);
@@ -105,8 +104,7 @@ function StockStorePage() {
       setIsLoading(true);
       const { data } = await api.post(endpoints.stocks, values);
       await new Promise((resolve) => setTimeout(resolve, 1500));
-
-      addStoreStocks([data]);
+      addStocks(data);
       resetForm();
       setDialogOpen(false);
       toast.success("Item added successfully");
@@ -122,7 +120,7 @@ function StockStorePage() {
       try {
         setIsLoading(true);
         const { data } = await api.get(endpoints.stocks);
-        setStoreStocks(data);
+        setStocks(data);
       } catch (error: any) {
         toast.error(error?.response?.data?.message || error.message);
       } finally {
@@ -200,16 +198,13 @@ function StockStorePage() {
             </FormDialog>
 
             <Button
-              onClick={() => exportTableToPDF(storeStocks, columns)}
+              onClick={() => exportTableToPDF(stocks, columns)}
               variant="secondary"
             >
               <Printer className="text-primary" size={18} />
             </Button>
 
-            <Button
-              onClick={() => exportToExcel(storeStocks)}
-              variant="secondary"
-            >
+            <Button onClick={() => exportToExcel(stocks)} variant="secondary">
               <FileSpreadsheet className="text-green-700" size={18} />
             </Button>
 

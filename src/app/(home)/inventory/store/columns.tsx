@@ -1,22 +1,20 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 "use client";
-import { DataTableColumnHeader } from "@/components/ui/data-table/DataTableColumnHeader";
-import {
-  StoreStockItem,
-  useStoreStockStore,
-} from "@/stores/useStoreStockStore";
-import { ColumnDef, createColumnHelper } from "@tanstack/react-table";
-import StoreForm, { StoreFormValues } from "./StoreForm";
-import DeleteConfirmation from "@/components/shared/DeleteConfirmation";
-import { FormDialog } from "@/components/shared/FormDialog";
-import { Checkbox } from "@/components/ui/Checkbox";
+import { IStock } from "@/types";
+import { useState } from "react";
+import toast from "react-hot-toast";
+import api, { endpoints } from "@/lib/api";
 import { Button } from "@/components/ui/Button";
 import { Trash2, FileEdit } from "lucide-react";
-import toast from "react-hot-toast";
-import { useState } from "react";
-import api from "@/lib/api";
+import { useStockStore } from "@/stores/stockStore";
+import { Checkbox } from "@/components/ui/Checkbox";
+import StoreForm, { StoreFormValues } from "./StoreForm";
+import { FormDialog } from "@/components/shared/FormDialog";
+import { ColumnDef, createColumnHelper } from "@tanstack/react-table";
+import DeleteConfirmation from "@/components/shared/DeleteConfirmation";
+import { DataTableColumnHeader } from "@/components/ui/data-table/DataTableColumnHeader";
 
-const columnHelper = createColumnHelper<StoreStockItem>();
+const columnHelper = createColumnHelper<IStock>();
 
 export const columns = [
   columnHelper.display({
@@ -51,28 +49,48 @@ export const columns = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Store In" />
     ),
-    cell: (info) => info.getValue(),
+    cell: (info) => (
+      <div>
+        {info.getValue()}{" "}
+        <span className="text-xs text-gray-500">{info.row.original.unit}</span>
+      </div>
+    ),
     enableSorting: true,
   }),
   columnHelper.accessor("storeOut", {
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Store Out" />
     ),
-    cell: (info) => info.getValue(),
+    cell: (info) => (
+      <div>
+        {info.getValue()}{" "}
+        <span className="text-xs text-gray-500">{info.row.original.unit}</span>
+      </div>
+    ),
     enableSorting: true,
   }),
-  columnHelper.accessor("previous", {
+  columnHelper.accessor("carried", {
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Remaining Stock" />
     ),
-    cell: (info) => info.getValue(),
+    cell: (info) => (
+      <div>
+        {info.getValue()}{" "}
+        <span className="text-xs text-gray-500">{info.row.original.unit}</span>
+      </div>
+    ),
     enableSorting: true,
   }),
   columnHelper.accessor("current", {
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Current Stock" />
     ),
-    cell: (info) => info.getValue(),
+    cell: (info) => (
+      <div>
+        {info.getValue()}{" "}
+        <span className="text-xs text-gray-500">{info.row.original.unit}</span>
+      </div>
+    ),
     enableSorting: true,
   }),
   columnHelper.display({
@@ -82,7 +100,7 @@ export const columns = [
       const [dialogOpen, setDialogOpen] = useState(false);
       const [isUpdating, setIsUpdating] = useState(false);
       const [isDeleting, setIsDeleting] = useState(false);
-      const { updateStoreStock, removeStoreStocks } = useStoreStockStore();
+      const { updateStock, removeStocks } = useStockStore();
 
       const onFormSubmit = async (
         values: StoreFormValues,
@@ -91,11 +109,11 @@ export const columns = [
         try {
           setIsUpdating(true);
           const { data } = await api.put(
-            `/store-stocks/${row.original._id}`,
+            `${endpoints.stocks}/${row.original._id}`,
             values
           );
           await new Promise((resolve) => setTimeout(resolve, 1500));
-          updateStoreStock(row.original._id as string, data);
+          updateStock(row.original._id, data);
           resetForm();
           setDialogOpen(false);
           toast.success("Item updated successfully");
@@ -109,12 +127,12 @@ export const columns = [
       const handleDelete = async (id: string) => {
         try {
           setIsDeleting(true);
-          const { data } = await api.delete(`/store-stocks`, {
+          const { data } = await api.delete(endpoints.stocks, {
             data: { ids: [id] },
           });
 
           await new Promise((resolve) => setTimeout(resolve, 2000));
-          removeStoreStocks([id]);
+          removeStocks([id]);
           toast.success(data.message);
         } catch (error: any) {
           toast.error(error?.response?.data?.message || error.message);
@@ -128,6 +146,7 @@ export const columns = [
           <FormDialog
             open={dialogOpen}
             onOpenChange={setDialogOpen}
+            className="p-0 max-w-md"
             form={
               <StoreForm
                 initialValues={row.original}
@@ -160,4 +179,4 @@ export const columns = [
       );
     },
   }),
-] as ColumnDef<StoreStockItem>[];
+] as ColumnDef<IStock>[];
