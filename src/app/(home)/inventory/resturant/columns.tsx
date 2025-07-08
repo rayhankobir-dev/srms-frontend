@@ -1,21 +1,21 @@
 /* eslint-disable react-hooks/rules-of-hooks */
-import { DataTableColumnHeader } from "@/components/ui/data-table/DataTableColumnHeader"
-import { ColumnDef, createColumnHelper } from "@tanstack/react-table"
-import RestaurantForm, { RestaurantFormValues } from "./ResturantForm"
-import DeleteConfirmation from "@/components/shared/DeleteConfirmation"
-import { FormDialog } from "@/components/shared/FormDialog"
-import { Checkbox } from "@/components/ui/Checkbox"
-import { Button } from "@/components/ui/Button"
-import { Trash2, FileEdit } from "lucide-react"
-import toast from "react-hot-toast"
-import { useState } from "react"
+import { DataTableColumnHeader } from "@/components/ui/data-table/DataTableColumnHeader";
+import { ColumnDef, createColumnHelper } from "@tanstack/react-table";
+import RestaurantForm, { RestaurantFormValues } from "./ResturantForm";
+import DeleteConfirmation from "@/components/shared/DeleteConfirmation";
+import { FormDialog } from "@/components/shared/FormDialog";
+import { Checkbox } from "@/components/ui/Checkbox";
+import { Button } from "@/components/ui/Button";
+import { Trash2, FileEdit } from "lucide-react";
+import toast from "react-hot-toast";
+import { useState } from "react";
 import {
   StockItem,
   useRestaurantStockStore,
-} from "@/stores/useRestorentStockStore"
-import api from "@/lib/api"
+} from "@/stores/useRestorentStockStore";
+import api from "@/lib/api";
 
-const columnHelper = createColumnHelper<StockItem>()
+const columnHelper = createColumnHelper<StockItem>();
 
 export const columns = [
   columnHelper.display({
@@ -60,7 +60,7 @@ export const columns = [
     cell: (info) => info.getValue(),
     enableSorting: true,
   }),
-  columnHelper.accessor("sales", {
+  columnHelper.accessor("sold", {
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Sales" />
     ),
@@ -78,50 +78,50 @@ export const columns = [
     id: "actions",
     header: () => <div className="w-full text-center">Actions</div>,
     cell: ({ row }) => {
-      const [dialogOpen, setDialogOpen] = useState(false)
-      const [isUpdating, setIsUpdating] = useState(false)
-      const [isDeleting, setIsDeleting] = useState(false)
+      const [dialogOpen, setDialogOpen] = useState(false);
+      const [isUpdating, setIsUpdating] = useState(false);
+      const [isDeleting, setIsDeleting] = useState(false);
       const { updateRestaurantStocks, removeRestaurantStocks } =
-        useRestaurantStockStore()
+        useRestaurantStockStore();
 
       const onFormSubmit = async (
         values: RestaurantFormValues,
-        { resetForm }: any,
+        { resetForm }: any
       ) => {
         try {
-          setIsUpdating(true)
+          setIsUpdating(true);
           const { data } = await api.put(
             `/restaurant-stocks/${row.original._id}`,
-            values,
-          )
-          await new Promise((resolve) => setTimeout(resolve, 1500))
-          updateRestaurantStocks(row.original._id as string, data)
-          resetForm()
-          setDialogOpen(false)
-          toast.success("Item updated successfully")
+            values
+          );
+          await new Promise((resolve) => setTimeout(resolve, 1500));
+          updateRestaurantStocks(row.original._id as string, data);
+          resetForm();
+          setDialogOpen(false);
+          toast.success("Item updated successfully");
         } catch (error: any) {
-          toast.error(error?.response?.data?.message || error.message)
+          toast.error(error?.response?.data?.message || error.message);
         } finally {
-          setIsUpdating(false)
+          setIsUpdating(false);
         }
-      }
+      };
 
       const handleDelete = async (id: string) => {
         try {
-          setIsDeleting(true)
+          setIsDeleting(true);
           const { data } = await api.delete(`/restaurant-stocks`, {
             data: { ids: [id] },
-          })
+          });
 
-          await new Promise((resolve) => setTimeout(resolve, 2000))
-          removeRestaurantStocks([id])
-          toast.success(data.message)
+          await new Promise((resolve) => setTimeout(resolve, 2000));
+          removeRestaurantStocks([id]);
+          toast.success(data.message);
         } catch (error: any) {
-          toast.error(error?.response?.data?.message || error.message)
+          toast.error(error?.response?.data?.message || error.message);
         } finally {
-          setIsDeleting(false)
+          setIsDeleting(false);
         }
-      }
+      };
 
       return (
         <div className="flex w-full justify-center gap-1.5">
@@ -131,8 +131,9 @@ export const columns = [
             form={
               <RestaurantForm
                 initialValues={row.original}
+                setDialogOpen={setDialogOpen}
                 onSubmit={onFormSubmit}
-                title="Update Restaurant Stock"
+                title="Update restaurant stock"
                 description="Edit this item's details"
                 buttonText="Update Item"
                 isLoading={isUpdating}
@@ -160,7 +161,7 @@ export const columns = [
             </Button>
           </DeleteConfirmation>
         </div>
-      )
+      );
     },
   }),
-] as ColumnDef<StockItem>[]
+] as ColumnDef<StockItem>[];

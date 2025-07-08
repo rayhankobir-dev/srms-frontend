@@ -131,6 +131,7 @@ export const columns = [
             form={
               <StoreForm
                 initialValues={row.original}
+                setDialogOpen={setDialogOpen}
                 onSubmit={onFormSubmit}
                 title="Update Store Item"
                 description="Edit this item's details"
