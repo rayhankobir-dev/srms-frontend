@@ -37,10 +37,10 @@ export function UserProfile() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <button className="flex items-center justify-between rounded-lg border bg-muted px-2 py-1.5">
+        <button className="flex items-center justify-between gap-1.5 rounded-lg border bg-muted px-2 py-1.5">
           <Avatar className="h-10 w-10 rounded-full grayscale">
             <AvatarImage alt="Rayhan" />
-            <AvatarFallback className="rounded-lg">
+            <AvatarFallback className="rounded-lg bg-gray-200">
               {hasHydrated && user?.firstName[0]}
             </AvatarFallback>
           </Avatar>
