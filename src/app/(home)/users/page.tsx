@@ -29,7 +29,7 @@ import {
 import { useDebouncedCallback } from "use-debounce";
 import { FormDialog } from "@/components/shared/FormDialog";
 import UserForm, { UserFormValues } from "./UserForm";
-import { useUserStore } from "@/stores/useUserStore";
+import { useUserStore } from "@/stores/userStore";
 import api, { endpoints } from "@/lib/api";
 import Link from "next/link";
 import { cx } from "@/lib/utils";

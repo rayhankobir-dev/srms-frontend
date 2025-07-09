@@ -1,6 +1,5 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @next/next/no-img-element */
-import { Badge } from "@/components/ui/Badge";
-import { Button } from "@/components/ui/Button";
 import {
   Card,
   CardContent,
@@ -11,18 +10,21 @@ import {
 } from "@/components/ui/Card";
 import * as Yup from "yup";
 import { cx } from "@/lib/utils";
+import toast from "react-hot-toast";
+import { ITable, User } from "@/types";
 import { tv } from "tailwind-variants";
-import { Input } from "@/components/ui/Input";
-import { Label } from "@/components/ui/Label";
-import { Edit, Save, Trash2 } from "lucide-react";
-import { ErrorMessage, FormikProvider, useFormik } from "formik";
-import { SelectInput } from "@/components/ui/SelectInput";
 import api, { endpoints } from "@/lib/api";
 import { useEffect, useState } from "react";
-import { ITable, User } from "@/types";
-import Spinner from "@/components/shared/Spinner";
-import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
+import { Badge } from "@/components/ui/Badge";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
+import { Label } from "@/components/ui/Label";
+import Spinner from "@/components/shared/Spinner";
+import { Edit, Save, Trash2 } from "lucide-react";
+import { useTableStore } from "@/stores/tableStore";
+import { SelectInput } from "@/components/ui/SelectInput";
+import { ErrorMessage, FormikProvider, useFormik } from "formik";
 
 const tableSchema = Yup.object({
   name: Yup.string().required("Table name is required"),
@@ -31,19 +33,19 @@ const tableSchema = Yup.object({
 
 function TableSettings() {
   const [isLoading, setIsLoading] = useState(false);
-  const [isFetching, setIsFetching] = useState(false);
+  const [isFetching, setIsFetching] = useState(true);
   const [staffs, setStaffs] = useState<User[]>([]);
-  const [tables, setTables] = useState<ITable[]>([]);
   const [tableFetching, setTableFetching] = useState(false);
   const [selectedTable, setSelectedTable] = useState<ITable | null>(null);
+  const { tables, addTable, updateTable, setTables } = useTableStore();
 
   const fetchTables = async () => {
     try {
       setTableFetching(true);
       const { data } = await api.get(endpoints.tables);
       setTables(data);
-    } catch (error) {
-      console.error(error);
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message || error.message);
     } finally {
       setTableFetching(false);
     }
@@ -78,24 +80,21 @@ function TableSettings() {
       try {
         if (selectedTable) {
           const { data } = await api.put(
-            endpoints.tables + "/" + selectedTable._id,
+            `${endpoints.tables}/${selectedTable._id}`,
             values
           );
-          setTables([
-            ...tables.filter((table) => table._id !== selectedTable._id),
-            data,
-          ]);
+          updateTable(selectedTable._id, data);
           setSelectedTable(null);
           toast.success("Table updated successfully");
         } else {
           const { data } = await api.post(endpoints.tables, values);
           new Promise((resolve) => setTimeout(resolve, 1000));
-          setTables([...tables, data]);
+          addTable(data);
           toast.success("Table created successfully");
         }
         resetForm();
-      } catch (error) {
-        console.error(error);
+      } catch (error: any) {
+        toast.error(error?.response?.data?.message || error.message);
       } finally {
         setIsLoading(false);
       }
@@ -178,7 +177,9 @@ function TableSettings() {
       </CardContent>
       <CardFooter className="flex flex-wrap gap-3 border-t pt-2">
         {tableFetching ? (
-          <Spinner />
+          <div className="w-full py-4 text-center text-sm text-muted-foreground">
+            <Spinner />
+          </div>
         ) : tables.length === 0 ? (
           <div className="w-full py-4 text-center text-sm text-muted-foreground">
             No tables found please create.
@@ -233,15 +234,17 @@ export function Table({
   ...props
 }: TableProps) {
   const [isDeleting, setIsDeleting] = useState(false);
+  const { removeTable } = useTableStore();
   const router = useRouter();
 
   const handleDelete = async () => {
     try {
       setIsDeleting(true);
-      await api.delete(endpoints.tables + "/" + table._id);
+      await api.delete(`${endpoints.tables}/${table._id}`);
       new Promise((resolve) => setTimeout(resolve, 1000));
-    } catch (error) {
-      console.error(error);
+      removeTable(table._id);
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message || error.message);
     } finally {
       setIsDeleting(false);
     }

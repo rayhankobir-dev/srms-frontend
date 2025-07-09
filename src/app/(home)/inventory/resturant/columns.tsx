@@ -126,7 +126,7 @@ export const columns = [
       const handleDelete = async (id: string) => {
         try {
           setIsDeleting(true);
-          const { data } = await api.delete(`/restaurant-stocks`, {
+          const { data } = await api.delete(endpoints.inventory, {
             data: { ids: [id] },
           });
 

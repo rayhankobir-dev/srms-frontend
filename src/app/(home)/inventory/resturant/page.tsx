@@ -75,7 +75,6 @@ function StockResturantPage() {
       const { data } = await api.delete(endpoints.inventory, {
         data: { ids: selectedIds },
       });
-
       await new Promise((resolve) => setTimeout(resolve, 2000));
       removeInventory(selectedIds);
       toast.success(data.message);

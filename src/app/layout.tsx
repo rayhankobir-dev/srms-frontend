@@ -1,24 +1,25 @@
-import "./globals.css"
-import type { Metadata } from "next"
-import localFont from "next/font/local"
-import { siteConfig } from "./siteConfig"
-import { TooltipProvider } from "@/components/ui/Tooltip"
-import ReactQueryProvider from "@/contexts/QueryProvider"
-import { Toaster } from "react-hot-toast"
-import LoadingScreen from "@/components/ui/LoadingScreen"
-import { Suspense } from "react"
-import { AuthProvider } from "@/contexts/AuthContext"
+import "./globals.css";
+import { Suspense } from "react";
+import type { Metadata } from "next";
+import localFont from "next/font/local";
+import { siteConfig } from "./siteConfig";
+import { Toaster } from "react-hot-toast";
+import { AuthProvider } from "@/contexts/AuthContext";
+import { TooltipProvider } from "@/components/ui/Tooltip";
+import ReactQueryProvider from "@/contexts/QueryProvider";
+import LoadingScreen from "@/components/ui/LoadingScreen";
+import RouteProgressBar from "@/components/shared/RouteChangeLoader";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
   variable: "--font-geist-sans",
   weight: "100 900",
-})
+});
 const geistMono = localFont({
   src: "./fonts/GeistMonoVF.woff",
   variable: "--font-geist-mono",
   weight: "100 900",
-})
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.appUrl),
@@ -42,12 +43,12 @@ export const metadata: Metadata = {
   icons: {
     icon: siteConfig.logoUrl,
   },
-}
+};
 
 export default async function RootLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
   return (
     <html lang="en" className="h-full" suppressHydrationWarning>
@@ -57,6 +58,7 @@ export default async function RootLayout({
         <ReactQueryProvider>
           <TooltipProvider>
             <AuthProvider>
+              <RouteProgressBar />
               <Suspense fallback={<LoadingScreen />}>{children}</Suspense>
             </AuthProvider>
           </TooltipProvider>
@@ -64,5 +66,5 @@ export default async function RootLayout({
         </ReactQueryProvider>
       </body>
     </html>
-  )
+  );
 }

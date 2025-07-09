@@ -200,3 +200,14 @@
     opacity: 0;
   }
 }
+
+#nprogress {
+  pointer-events: none;
+}
+
+#nprogress .bar {
+  background: var(--primary);
+  position: fixed;
+  z-index: 999;
+  height: 7px;
+}

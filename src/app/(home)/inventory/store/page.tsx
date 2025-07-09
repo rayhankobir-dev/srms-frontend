@@ -24,15 +24,16 @@ import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { useEffect, useRef, useState } from "react";
 import { useDebouncedCallback } from "use-debounce";
+import { useStockStore } from "@/stores/stockStore";
 import StoreForm, { StoreFormValues } from "./StoreForm";
 import { FormDialog } from "@/components/shared/FormDialog";
 import { exportTableToPDF, exportToExcel } from "@/lib/export";
 import { DataTable } from "@/components/ui/data-table/DataTable";
 import DeleteConfirmation from "@/components/shared/DeleteConfirmation";
-import { useStockStore } from "@/stores/stockStore";
 
 function StockStorePage() {
   const [isLoading, setIsLoading] = useState(true);
+  const [isCreating, setIsCreating] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
@@ -101,7 +102,7 @@ function StockStorePage() {
 
   const onFormSubmit = async (values: StoreFormValues, { resetForm }: any) => {
     try {
-      setIsLoading(true);
+      setIsCreating(true);
       const { data } = await api.post(endpoints.stocks, values);
       await new Promise((resolve) => setTimeout(resolve, 1500));
       addStocks(data);
@@ -111,7 +112,7 @@ function StockStorePage() {
     } catch (error: any) {
       toast.error(error?.response?.data?.message || error.message);
     } finally {
-      setIsLoading(false);
+      setIsCreating(false);
     }
   };
 
@@ -133,7 +134,7 @@ function StockStorePage() {
   return (
     <main className="space-y-3.5">
       <section className="px-4">
-        <h1 className="text-lg font-semibold">Manage Store Stocks</h1>
+        <h1 className="text-lg font-semibold">Manage store stocks</h1>
         <p className="max-w-2xl text-sm">
           Manage your store's stock inventory. Search by item name or category.
         </p>
@@ -186,7 +187,7 @@ function StockStorePage() {
                   title="Add new store stock"
                   description="Add a new item to the store inventory"
                   buttonText="Create stock"
-                  isLoading={isLoading}
+                  isLoading={isCreating}
                   loadingText="Creating"
                 />
               }

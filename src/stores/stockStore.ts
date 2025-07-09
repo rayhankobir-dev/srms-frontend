@@ -3,7 +3,7 @@ import { create } from "zustand";
 
 type StockStore = {
   stocks: IStock[];
-  addStocks: (items: IStock[]) => void;
+  addStocks: (item: IStock) => void;
   updateStock: (id: string, updatedItem: Partial<IStock>) => void;
   removeStocks: (ids: string[]) => void;
   setStocks: (items: IStock[]) => void;
@@ -12,9 +12,9 @@ type StockStore = {
 export const useStockStore = create<StockStore>((set) => ({
   stocks: [],
 
-  addStocks: (items) =>
+  addStocks: (item) =>
     set((state) => ({
-      stocks: [...state.stocks, ...items],
+      stocks: [...state.stocks, item],
     })),
 
   updateStock: (id, updatedItem) =>

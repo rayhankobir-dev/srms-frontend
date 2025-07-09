@@ -9,6 +9,7 @@ import {
 import * as Yup from "yup";
 import { useState } from "react";
 import { Save } from "lucide-react";
+import toast from "react-hot-toast";
 import api, { endpoints } from "@/lib/api";
 import { genders } from "@/constants/data";
 import { Input } from "@/components/ui/Input";
@@ -18,7 +19,6 @@ import { useAuthStore } from "@/stores/authStore";
 import { Textarea } from "@/components/ui/Textarea";
 import { SelectInput } from "@/components/ui/SelectInput";
 import { ErrorMessage, FormikProvider, useFormik } from "formik";
-import toast from "react-hot-toast";
 
 const settingsSchema = Yup.object().shape({
   firstName: Yup.string().required("First name is required"),
@@ -32,7 +32,7 @@ const settingsSchema = Yup.object().shape({
 
 function Profile() {
   const [isUpdating, setIsUpdating] = useState(false);
-  const { user, hasHydrated } = useAuthStore();
+  const { user, hasHydrated, setUser } = useAuthStore();
   const initialValues = {
     firstName: "",
     lastName: "",
@@ -64,7 +64,7 @@ function Profile() {
           `${endpoints.users}/${user?._id}`,
           values
         );
-        console.log({ data });
+        setUser(data);
         toast.success("Profile updated successfully");
       } catch (error: any) {
         toast.error(error?.response?.data?.message || error.message);
@@ -74,7 +74,6 @@ function Profile() {
     },
   });
 
-  console.log(formik.errors);
   return (
     <Card className="col-span-12 lg:col-span-8">
       <CardHeader>

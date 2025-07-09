@@ -8,7 +8,7 @@ import { FileEdit, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Checkbox } from "@/components/ui/Checkbox";
 import UserForm, { UserFormValues } from "./UserForm";
-import { useUserStore, User } from "@/stores/useUserStore";
+import { useUserStore, User } from "@/stores/userStore";
 import { FormDialog } from "@/components/shared/FormDialog";
 import { ColumnDef, createColumnHelper } from "@tanstack/react-table";
 import DeleteConfirmation from "@/components/shared/DeleteConfirmation";

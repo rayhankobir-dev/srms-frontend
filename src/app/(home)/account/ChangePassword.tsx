@@ -7,21 +7,21 @@ import {
   CardTitle,
 } from "@/components/ui/Card";
 import * as Yup from "yup";
+import { useState } from "react";
 import { Save } from "lucide-react";
+import toast from "react-hot-toast";
+import api, { endpoints } from "@/lib/api";
 import { Input } from "@/components/ui/Input";
 import { Label } from "@/components/ui/Label";
 import { Button } from "@/components/ui/Button";
 import { ErrorMessage, FormikProvider, useFormik } from "formik";
-import { useState } from "react";
-import api, { endpoints } from "@/lib/api";
-import toast from "react-hot-toast";
 
 const settingsSchema = Yup.object().shape({
-  currentPassword: Yup.string().required("First name is required"),
+  currentPassword: Yup.string().required("Current password is required"),
   newPassword: Yup.string().required("Password is required"),
   confirmPassword: Yup.string()
     .required("Re-type password")
-    .oneOf([Yup.ref("newPassword")], "Passwords must match"),
+    .oneOf([Yup.ref("newPassword")], "Passwords did'nt match"),
 });
 
 function ChangePassword() {
