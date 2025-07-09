@@ -35,17 +35,18 @@ function ConfigureSettings() {
   const { settings, setSettings } = useSettingStore();
 
   const formik = useFormik({
-    initialValues: settings || {
-      tableCount: 0,
-      taxPercentage: 0,
+    initialValues: {
+      tableCount: settings?.tableCount || 0,
+      taxPercentage: settings?.taxPercentage || 0,
       currency: {
-        code: "BDT",
-        name: "Bangladeshi Taka",
-        sign: "৳",
+        code: settings?.currency?.code || "BDT",
+        name: settings?.currency?.name || "Bangladeshi Taka",
+        sign: settings?.currency?.sign || "৳",
       },
-      inventoryInsufficencyAt: 10,
+      inventoryInsufficencyAt: settings?.inventoryInsufficencyAt || 10,
     },
     validationSchema: settingsSchema,
+    enableReinitialize: true,
     onSubmit: async (values) => {
       try {
         setIsLoading(true);
@@ -59,8 +60,6 @@ function ConfigureSettings() {
       }
     },
   });
-
-  console.log(formik.errors);
 
   return (
     <Card>
