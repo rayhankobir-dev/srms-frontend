@@ -141,9 +141,6 @@ function Profile() {
                       formik.errors.gender !== undefined
                     }
                     {...formik.getFieldProps("gender")}
-                    onChange={(value) => {
-                      formik.setFieldValue("gender", value);
-                    }}
                   />
                   <ErrorMessage
                     className="font-light text-xs text-rose-600"

@@ -147,7 +147,7 @@ function UsersPage() {
   return (
     <main className="space-y-3.5">
       <section className="px-4">
-        <h1 className="text-lg font-semibold">User Management</h1>
+        <h1 className="text-lg font-semibold">User management</h1>
         <p className="max-w-2xl text-sm">
           Find your users or create users. Search by user name or by role.
         </p>
@@ -209,9 +209,7 @@ function UsersPage() {
                       }}
                       onSubmit={onFormSubmit}
                       setDialogOpen={setDialogOpen}
-                      title="Onboard new User"
-                      description="Add a new item to the inventory"
-                      buttonText="Add User"
+                      description="Please make sure password is strong enough"
                       isLoading={isCreating}
                     />
                   }

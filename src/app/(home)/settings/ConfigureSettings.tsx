@@ -7,62 +7,50 @@ import {
   CardTitle,
 } from "@/components/ui/Card";
 import * as Yup from "yup";
-import { ISettings } from "@/types";
+import { useState } from "react";
 import toast from "react-hot-toast";
 import { Save } from "lucide-react";
 import api, { endpoints } from "@/lib/api";
-import { useEffect, useState } from "react";
 import { Input } from "@/components/ui/Input";
 import { Label } from "@/components/ui/Label";
 import { Button } from "@/components/ui/Button";
 import { currencies } from "@/constants/data";
+import { useSettingStore } from "@/stores/settingStore";
 import { SelectInput } from "@/components/ui/SelectInput";
 import { ErrorMessage, FormikProvider, useFormik } from "formik";
 
 const settingsSchema = Yup.object().shape({
   tableCount: Yup.number().required("Table count is required"),
   taxPercentage: Yup.number().required("Tax percentage is required"),
-  currency: Yup.string().required("Currency is required"),
+  currency: Yup.object({
+    code: Yup.string().required("Currency code is required"),
+    name: Yup.string().required("Currency name is required"),
+    sign: Yup.string().required("Currency sign is required"),
+  }).required("Currency is required"),
   inventoryInsufficencyAt: Yup.number().required("Inventory insufficiency at"),
 });
 
 function ConfigureSettings() {
-  const [settings, setSettings] = useState<ISettings>({
-    tableCount: 0,
-    taxPercentage: 0,
-    currency: "",
-    inventoryInsufficencyAt: 10,
-  });
-  const [isFetching, setIsFetching] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-
-  useEffect(() => {
-    const fetchSettings = async () => {
-      try {
-        setIsFetching(true);
-        const { data } = await api.get(endpoints.settings);
-        if (data) {
-          setSettings(data);
-        }
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setIsFetching(false);
-      }
-    };
-
-    fetchSettings();
-  }, []);
+  const { settings, setSettings } = useSettingStore();
 
   const formik = useFormik({
-    initialValues: settings,
+    initialValues: settings || {
+      tableCount: 0,
+      taxPercentage: 0,
+      currency: {
+        code: "BDT",
+        name: "Bangladeshi Taka",
+        sign: "৳",
+      },
+      inventoryInsufficencyAt: 10,
+    },
     validationSchema: settingsSchema,
-    enableReinitialize: true,
     onSubmit: async (values) => {
       try {
         setIsLoading(true);
         const { data } = await api.put(endpoints.settings, values);
-        setSettings(data.settings);
+        setSettings(data);
         toast.success("Settings updated successfully");
       } catch (error) {
         console.error(error);
@@ -71,6 +59,8 @@ function ConfigureSettings() {
       }
     },
   });
+
+  console.log(formik.errors);
 
   return (
     <Card>
@@ -137,16 +127,16 @@ function ConfigureSettings() {
                     placeholder="Select currency"
                     options={currencies.map((c) => ({
                       label: `${c.code} (${c.name})`,
-                      value: c.code,
+                      value: c,
                     }))}
                     hasError={
                       formik.touched.currency &&
                       formik.errors.currency !== undefined
                     }
                     {...formik.getFieldProps("currency")}
-                    onChange={(value) => {
-                      formik.setFieldValue("currency", value);
-                    }}
+                    onChange={(value) =>
+                      formik.setFieldValue("currency", value)
+                    }
                   />
                   <ErrorMessage
                     className="font-light text-xs text-rose-600"
@@ -180,7 +170,7 @@ function ConfigureSettings() {
             </div>
 
             <Button
-              disabled={isLoading || isFetching}
+              disabled={isLoading}
               loadingText="Saving"
               className="w-fit self-end px-4"
             >

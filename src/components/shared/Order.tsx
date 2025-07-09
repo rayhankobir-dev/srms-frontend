@@ -2,32 +2,41 @@
 import * as React from "react";
 import { Divider } from "../ui/Divider";
 import { Input } from "@/components/ui/Input";
+import { IMenuItem } from "@/types";
 import { SelectInput } from "../ui/SelectInput";
 import { Button } from "@/components/ui/Button";
 import { Check, Trash2, Plus } from "lucide-react";
-import { useInventoryStore } from "@/stores/inventoryStore";
+import QuantityInput from "../ui/QuantityInput";
+import { useSettingStore } from "@/stores/settingStore";
 
 interface InvoiceItem {
   id: string;
-  name: string;
-  description: string;
+  menu: IMenuItem | undefined;
+  menuId: string;
+  itemName: string;
+  unit: string | undefined;
   quantity: number;
-  price: number;
+  unitPrice: number;
+  inventoryImpact: number;
 }
 
-export default function InvoiceForm() {
+export default function InvoiceForm({ menus }: { menus: IMenuItem[] }) {
   const [items, setItems] = React.useState<InvoiceItem[]>([]);
-  const [discount, setDiscount] = React.useState(1);
-  const { inventory } = useInventoryStore();
-  const [tax, setTax] = React.useState(0);
+  const { settings } = useSettingStore();
+  const [tax, setTax] = React.useState(settings.taxPercentage);
+  const [discount, setDiscount] = React.useState(0);
+  console.log(menus);
 
   const addItem = () => {
     const newItem: InvoiceItem = {
       id: Date.now().toString(),
-      name: "",
-      description: "",
+      menuId: "",
+      menu: undefined,
+      itemName: "",
+      unit: undefined,
       quantity: 1,
-      price: 1.0,
+      unitPrice: 0,
+      inventoryImpact: 0,
     };
     setItems([...items, newItem]);
   };
@@ -46,8 +55,46 @@ export default function InvoiceForm() {
     );
   };
 
+  const handleMenuChange = (id: string, menu: IMenuItem | undefined) => {
+    if (!menu) return;
+    setItems((prev) =>
+      prev.map((item) =>
+        item.id === id
+          ? {
+              ...item,
+              menuId: menu._id,
+              menu,
+              itemName: menu.itemName,
+              unit: "",
+              unitPrice: 0,
+              inventoryImpact: 0,
+            }
+          : item
+      )
+    );
+  };
+
+  const handleUnitChange = (id: string, unit: string | undefined) => {
+    if (!unit) return;
+    setItems((prev) =>
+      prev.map((item) => {
+        if (item.id !== id || !item.menu) return item;
+
+        const pricing = item.menu.pricing.find((p) => p.unit === unit);
+        if (!pricing) return item;
+
+        return {
+          ...item,
+          unit,
+          unitPrice: pricing.unitPrice,
+          inventoryImpact: pricing.inventoryImpact,
+        };
+      })
+    );
+  };
+
   const subtotal = items.reduce(
-    (sum, item) => sum + item.quantity * item.price,
+    (sum, item) => sum + item.quantity * item.unitPrice,
     0
   );
   const discountAmount = (subtotal * discount) / 100;
@@ -66,7 +113,10 @@ export default function InvoiceForm() {
               <th className="min-w-[200px] px-2 py-3 text-left text-sm font-medium">
                 Item
               </th>
-              <th className="w-24 px-2 py-3 text-left text-sm font-medium">
+              <th className="min-w-[140px] px-2 py-3 text-left text-sm font-medium">
+                Unit
+              </th>
+              <th className="w-32 px-2 py-3 text-left text-sm font-medium">
                 Quantity
               </th>
               <th className="w-32 text-nowrap px-2 py-3 text-left text-sm font-medium">
@@ -81,44 +131,53 @@ export default function InvoiceForm() {
             </tr>
           </thead>
           <tbody>
-            {items.map((item, index) => (
+            {items.map((item: InvoiceItem, index: number) => (
               <tr key={item.id} className="border-b">
                 <td className="px-2 py-4 pl-4">{index + 1}</td>
-                <td className="px-2 py-4">
+                <td className="px-2 py-4 pr-4">
                   <SelectInput
                     placeholder="Select item"
-                    options={inventory.map((item) => ({
-                      label: item.itemName,
-                      value: item.itemName,
+                    options={menus.map((menu) => ({
+                      label: menu.itemName,
+                      value: menu,
                     }))}
-                    value={item.name}
-                    onChange={(value) => updateItem(item.id, "name", value)}
+                    value={item.menu}
+                    onChange={(value) => handleMenuChange(item.id, value)}
+                  />
+                </td>
+                <td className="px-2 py-4 pr-4">
+                  <SelectInput
+                    placeholder="Select unit"
+                    options={
+                      item.menu
+                        ? item.menu?.pricing?.map((p) => ({
+                            label: p.unit,
+                            value: p.unit,
+                          }))
+                        : []
+                    }
+                    value={item.unit}
+                    onChange={(value) => handleUnitChange(item.id, value)}
                   />
                 </td>
                 <td className="px-2 py-4">
-                  <Input
-                    type="number"
-                    min="1"
+                  <QuantityInput
+                    min={1}
+                    max={100}
                     value={item.quantity}
-                    onChange={(e) =>
-                      updateItem(
-                        item.id,
-                        "quantity",
-                        Number.parseInt(e.target.value) || 1
-                      )
-                    }
+                    onChange={(value) => updateItem(item.id, "quantity", value)}
                   />
                 </td>
                 <td className="px-2 py-4">
                   <div className="flex items-center">
                     <span className="mr-1">৳</span>
-                    <span>{item.price.toFixed(2)}</span>
+                    <span>{item.unitPrice.toFixed(2)}</span>
                   </div>
                 </td>
                 <td className="px-2 py-4">
                   <div className="flex items-center">
                     <span className="mr-1">৳</span>
-                    <span>{(item.quantity * item.price).toFixed(2)}</span>
+                    <span>{(item.quantity * item.unitPrice).toFixed(2)}</span>
                   </div>
                 </td>
                 <td className="px-2 py-4 pr-4">
@@ -153,7 +212,6 @@ export default function InvoiceForm() {
                 </label>
                 <Input
                   type="number"
-                  step="0.01"
                   min="0"
                   max="100"
                   value={discount}
@@ -168,7 +226,6 @@ export default function InvoiceForm() {
                 </label>
                 <Input
                   type="number"
-                  step="0.01"
                   min="0"
                   value={tax}
                   onChange={(e) =>

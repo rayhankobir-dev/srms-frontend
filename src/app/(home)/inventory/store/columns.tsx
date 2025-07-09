@@ -152,9 +152,9 @@ export const columns = [
                 initialValues={row.original}
                 setDialogOpen={setDialogOpen}
                 onSubmit={onFormSubmit}
-                title="Update Store Item"
+                title="Update store stock"
                 description="Edit this item's details"
-                buttonText="Update Item"
+                buttonText="Update stock"
                 isLoading={isUpdating}
                 loadingText="Updating"
               />

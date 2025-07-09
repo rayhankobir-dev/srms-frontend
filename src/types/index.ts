@@ -1,6 +1,12 @@
 export type Role = "ADMIN" | "MANAGER" | "STAFF";
 export type MealType = "DINNER" | "LUNCH" | "SUPPER" | "BREAKFAST";
 
+export type ICurrency = {
+  code: string;
+  name: string;
+  sign: string;
+};
+
 export type LinkedUser = {
   _id: string;
   firstName: string;
@@ -56,7 +62,7 @@ export type ITable = {
 export type ISettings = {
   tableCount: number;
   taxPercentage: number;
-  currency: string;
+  currency: ICurrency;
   inventoryInsufficencyAt: number;
 };
 

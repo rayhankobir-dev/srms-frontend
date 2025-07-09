@@ -39,9 +39,7 @@ function BreakfastPage() {
         <CardHeader>
           <section className="flex justify-between items-center">
             <div>
-              <h2 className="text-xl font-medium capitalize">
-                {params.category}
-              </h2>
+              <h2 className="text-xl font-medium capitalize">{params.meal}</h2>
               <p className="font-light">Please make sure right table</p>
             </div>
 
@@ -63,10 +61,10 @@ function BreakfastPage() {
               <Loader />
             </div>
           ) : (
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <div className="flex flex-wrap gap-4">
               {tables.map((table, index) => (
                 <Table
-                  href={`/dining/${params.category}/${table._id}`}
+                  href={`/dining/${params.meal}/${table._id}`}
                   isEditMode={false}
                   key={index}
                   table={table}

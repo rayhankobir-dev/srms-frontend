@@ -25,26 +25,23 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { useDebouncedCallback } from "use-debounce";
-import { FormDialog } from "@/components/shared/FormDialog";
-import { useUserStore } from "@/stores/useUserStore";
-import api, { endpoints } from "@/lib/api";
 import Link from "next/link";
 import { cx } from "@/lib/utils";
+import api, { endpoints } from "@/lib/api";
+import { useDebouncedCallback } from "use-debounce";
+import { useOrderStore } from "@/stores/orderStore";
 
 function UsersPage() {
   const [isFetching, setIsFetching] = useState(true);
-  const [isCreating, setIsCreating] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [dialogOpen, setDialogOpen] = useState(false);
   const [globalFilter, setGlobalFilter] = useState("");
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [columnFilters] = useState<ColumnFiltersState>([]);
   const [searchTerm, setSearchTerm] = useState(globalFilter);
   const searchInputRef = useRef<HTMLInputElement>(null);
-  const { users, addUser, setUsers, removeUser } = useUserStore();
+  const { orders, setOrders, removeOrders } = useOrderStore();
 
   const table = useReactTable({
-    data: users,
+    data: orders,
     columns,
     state: {
       globalFilter,
@@ -78,8 +75,7 @@ function UsersPage() {
       });
 
       await new Promise((resolve) => setTimeout(resolve, 2000));
-
-      selectedIds.forEach((id) => removeUser(id));
+      removeOrders(selectedIds);
       toast.success(data.message);
     } catch (error: any) {
       toast.error(error?.response?.data?.message || error.message);
@@ -107,9 +103,9 @@ function UsersPage() {
   const fetchData = async () => {
     setIsFetching(true);
     try {
-      const { data } = await api.get(endpoints.users);
+      const { data } = await api.get(endpoints.orders);
       await new Promise((resolve) => setTimeout(resolve, 1000));
-      setUsers(data);
+      setOrders(data);
     } catch (error: any) {
       toast.error(error?.response?.data?.message || error.message);
     } finally {
@@ -124,9 +120,9 @@ function UsersPage() {
   return (
     <main className="space-y-3.5">
       <section className="px-4">
-        <h1 className="text-lg font-semibold">Stock Resturant</h1>
+        <h1 className="text-lg font-semibold">Orders list</h1>
         <p className="max-w-2xl text-sm">
-          Find your resturant stocks. Search by item name or by category.
+          Find your orders. Search by item name or by category.
         </p>
       </section>
 
@@ -173,12 +169,12 @@ function UsersPage() {
               Add
             </Link>
             <Button
-              onClick={() => exportTableToPDF(users, columns)}
+              onClick={() => exportTableToPDF(orders, columns)}
               variant="secondary"
             >
               <Printer className="text-primary" size={18} />
             </Button>
-            <Button onClick={() => exportToExcel(users)} variant="secondary">
+            <Button onClick={() => exportToExcel(orders)} variant="secondary">
               <FileSpreadsheet className="text-green-700" size={18} />
             </Button>
             <Button variant="secondary">

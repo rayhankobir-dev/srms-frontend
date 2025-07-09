@@ -25,4 +25,15 @@ const api = axios.create({
   withCredentials: true,
 });
 
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.code === "ERR_NETWORK") {
+      error.message =
+        "Failed to connect to the server. Please check your internet.";
+    }
+    return Promise.reject(error);
+  }
+);
+
 export default api;

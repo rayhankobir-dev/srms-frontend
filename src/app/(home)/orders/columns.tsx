@@ -1,24 +1,17 @@
 /* eslint-disable react-hooks/rules-of-hooks */
-import api from "@/lib/api";
-import { cn } from "@/lib/utils";
+import api, { endpoints } from "@/lib/api";
 import { useState } from "react";
+import { IOrder } from "@/types";
 import toast from "react-hot-toast";
-import { Badge } from "@/components/ui/Badge";
 import { FileEdit, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Checkbox } from "@/components/ui/Checkbox";
-import { useUserStore, User } from "@/stores/useUserStore";
 import { ColumnDef, createColumnHelper } from "@tanstack/react-table";
 import DeleteConfirmation from "@/components/shared/DeleteConfirmation";
 import { DataTableColumnHeader } from "@/components/ui/data-table/DataTableColumnHeader";
+import { useOrderStore } from "@/stores/orderStore";
 
-const columnHelper = createColumnHelper<User>();
-
-const colors = {
-  ADMIN: "bg-orange-100 text-orange-500 ring-orange-300",
-  MANAGER: "bg-green-100 text-green-500 ring-green-300",
-  STUFF: "bg-purple-100 text-purple-500 ring-purple-300",
-};
+const columnHelper = createColumnHelper<IOrder>();
 
 export const columns = [
   columnHelper.display({
@@ -42,53 +35,40 @@ export const columns = [
       </div>
     ),
   }),
-  columnHelper.accessor("firstName", {
+  columnHelper.accessor("meal", {
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="First Name" />
     ),
     cell: (info) => info.getValue(),
     enableSorting: true,
   }),
-  columnHelper.accessor("lastName", {
+  columnHelper.accessor("table", {
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Last Name" />
     ),
     cell: (info) => info.getValue(),
     enableSorting: true,
   }),
-  columnHelper.accessor("email", {
+  columnHelper.accessor("status", {
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Email" />
     ),
     cell: (info) => info.getValue(),
     enableSorting: true,
   }),
-  columnHelper.accessor("phone", {
+  columnHelper.accessor("totalAmount", {
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Phone" />
     ),
     cell: (info) => info.getValue(),
     enableSorting: true,
   }),
-  columnHelper.accessor("address", {
+  columnHelper.accessor("taxAmount", {
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Address" />
     ),
     cell: (info) => info.getValue(),
     enableSorting: false,
-  }),
-  columnHelper.accessor("role", {
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Role" />
-    ),
-    cell: (info) => (
-      <div>
-        <Badge className={cn(colors[info.getValue() as keyof typeof colors])}>
-          {info.getValue()}
-        </Badge>
-      </div>
-    ),
-    enableSorting: true,
   }),
   columnHelper.accessor("createdAt", {
     header: ({ column }) => (
@@ -111,15 +91,15 @@ export const columns = [
     header: () => <div className="text-center">Actions</div>,
     cell: ({ row }) => {
       const [isDeleting, setIsDeleting] = useState(false);
-      const { removeUser } = useUserStore();
+      const { removeOrders } = useOrderStore();
 
       const handleDelete = async () => {
         const id = row.original._id;
         try {
           setIsDeleting(true);
-          const { data } = await api.delete(`/users/${id}`);
+          const { data } = await api.delete(endpoints.orders);
           await new Promise((resolve) => setTimeout(resolve, 2000));
-          removeUser(id);
+          removeOrders([id]);
           toast.success(data.message);
         } catch (error: any) {
           toast.error(error?.response?.data?.message || error.message);
@@ -143,4 +123,4 @@ export const columns = [
       );
     },
   }),
-] as ColumnDef<User>[];
+] as ColumnDef<IOrder>[];

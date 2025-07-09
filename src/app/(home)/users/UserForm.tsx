@@ -65,11 +65,11 @@ export default function UserForm({
   initialValues,
   onSubmit,
   setDialogOpen,
-  title = "Add User",
+  title = "Onboard new user",
   description = "Please make sure to fill in all the required fields",
-  buttonText = "Submit",
+  buttonText = "Onboard",
   isLoading = false,
-  loadingText = "Adding",
+  loadingText = "Onboarding",
 }: Props) {
   const formik = useFormik({
     initialValues,
@@ -120,6 +120,7 @@ export default function UserForm({
                     <Input
                       id="lastName"
                       type="text"
+                      placeholder="Doe"
                       hasError={
                         formik.touched.lastName &&
                         formik.errors.lastName !== undefined
@@ -142,6 +143,7 @@ export default function UserForm({
                     <Input
                       id="password"
                       type="password"
+                      placeholder="******"
                       hasError={
                         formik.touched.password &&
                         formik.errors.password !== undefined
@@ -164,6 +166,7 @@ export default function UserForm({
                     <Input
                       id="confirmPassword"
                       type="password"
+                      placeholder="Re-type password"
                       hasError={
                         formik.touched.confirmPassword &&
                         formik.errors.confirmPassword !== undefined
@@ -185,6 +188,7 @@ export default function UserForm({
                   <Input
                     id="email"
                     type="email"
+                    placeholder="demo@example.com"
                     hasError={
                       formik.touched.email && formik.errors.email !== undefined
                     }
@@ -211,9 +215,9 @@ export default function UserForm({
                         formik.errors.gender !== undefined
                       }
                       {...formik.getFieldProps("gender")}
-                      onChange={(value) => {
-                        formik.setFieldValue("gender", value);
-                      }}
+                      onChange={(value) =>
+                        formik.setFieldValue("gender", value)
+                      }
                     />
 
                     <ErrorMessage
@@ -261,9 +265,8 @@ export default function UserForm({
                         formik.touched.role && formik.errors.role !== undefined
                       }
                       {...formik.getFieldProps("role")}
-                      onChange={(value) => {
-                        formik.setFieldValue("role", value);
-                      }}
+                      value={formik.values.role}
+                      onChange={(value) => formik.setFieldValue("role", value)}
                     />
 
                     <ErrorMessage
