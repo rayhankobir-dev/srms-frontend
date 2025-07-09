@@ -13,7 +13,11 @@ export const useSettingStore = create<SettingStore>()(
       settings: {
         tableCount: 0,
         taxPercentage: 0,
-        currency: "",
+        currency: {
+          code: "BDT",
+          name: "Bangladeshi Taka",
+          sign: "৳",
+        },
         inventoryInsufficencyAt: 10,
       },
       setSettings: (settings) => set({ settings }),
