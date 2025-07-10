@@ -1,12 +1,12 @@
 "use client";
 import * as React from "react";
+import { IMenuItem } from "@/types";
 import { Divider } from "../ui/Divider";
 import { Input } from "@/components/ui/Input";
-import { IMenuItem } from "@/types";
 import { SelectInput } from "../ui/SelectInput";
+import QuantityInput from "../ui/QuantityInput";
 import { Button } from "@/components/ui/Button";
 import { Check, Trash2, Plus } from "lucide-react";
-import QuantityInput from "../ui/QuantityInput";
 import { useSettingStore } from "@/stores/settingStore";
 
 interface InvoiceItem {
@@ -91,6 +91,10 @@ export default function InvoiceForm({ menus }: { menus: IMenuItem[] }) {
         };
       })
     );
+  };
+
+  const handleOrderConfirm = async () => {
+    alert(items);
   };
 
   const subtotal = items.reduce(
@@ -259,7 +263,7 @@ export default function InvoiceForm({ menus }: { menus: IMenuItem[] }) {
         </div>
         <Divider />
         <div className="flex justify-end px-4">
-          <Button className="gap-1">
+          <Button onClick={handleOrderConfirm}>
             <Check size={18} /> Confirm Order
           </Button>
         </div>

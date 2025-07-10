@@ -1,16 +1,15 @@
-"use client"
-import Link from "next/link"
-import { ChevronRight } from "lucide-react"
-import { Fragment } from "react/jsx-runtime"
-import { useBreadcrumbs } from "@/hooks/useBreadcrumbs"
+"use client";
+import Link from "next/link";
+import { ChevronRight } from "lucide-react";
+import { useBreadcrumbs } from "@/hooks/useBreadcrumbs";
 
 export function Breadcrumbs() {
-  const items = useBreadcrumbs()
+  const items = useBreadcrumbs();
 
   return (
     <nav aria-label="Breadcrumb" className="ml-2">
-      <ol role="list" className="flex items-center space-x-3 text-sm">
-        <li className="flex">
+      <ol className="flex items-center space-x-2 text-sm">
+        <li>
           <Link
             href="/"
             className="text-gray-500 transition hover:text-gray-700 dark:text-gray-400 hover:dark:text-gray-300"
@@ -19,58 +18,26 @@ export function Breadcrumbs() {
           </Link>
         </li>
         {items.map((item, index) => (
-          <Fragment key={index}>
-            {index !== items.length - 1 && (
-              <>
-                <ChevronRight
-                  className="size-4 shrink-0 text-gray-600 dark:text-gray-400"
-                  aria-hidden="true"
-                />
-
-                <li className="flex">
-                  <Link
-                    href={item.link}
-                    className="text-gray-500 transition hover:text-gray-700 dark:text-gray-400 hover:dark:text-gray-300"
-                  >
-                    {item.title}
-                  </Link>
-                </li>
-              </>
-            )}
-
-            {index < items.length - 1 && (
-              <ChevronRight
-                className="size-4 shrink-0 text-gray-600 dark:text-gray-400"
-                aria-hidden="true"
-              />
-            )}
-
-            {items.length === 1 && (
-              <>
-                <ChevronRight
-                  className="size-4 shrink-0 text-gray-600 dark:text-gray-400"
-                  aria-hidden="true"
-                />
-                <li
-                  key={index}
-                  className="flex items-center text-gray-900 dark:text-gray-50"
-                >
-                  {item.title}
-                </li>
-              </>
-            )}
-
-            {index === items.length - 1 && items.length !== 1 && (
-              <li
-                key={index}
-                className="flex items-center text-gray-900 dark:text-gray-50"
+          <li key={index} className="flex items-center">
+            <ChevronRight
+              className="mx-2 size-4 shrink-0 text-gray-600 dark:text-gray-400"
+              aria-hidden="true"
+            />
+            {index === items.length - 1 ? (
+              <span className="text-gray-900 dark:text-gray-50">
+                {item.title}
+              </span>
+            ) : (
+              <Link
+                href={item.link}
+                className="text-gray-500 transition hover:text-gray-700 dark:text-gray-400 hover:dark:text-gray-300"
               >
                 {item.title}
-              </li>
+              </Link>
             )}
-          </Fragment>
+          </li>
         ))}
       </ol>
     </nav>
-  )
+  );
 }
