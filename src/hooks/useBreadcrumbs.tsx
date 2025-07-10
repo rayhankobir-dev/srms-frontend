@@ -29,7 +29,5 @@ export function useBreadcrumbs(): BreadcrumbItem[] {
     });
   }, [pathname]);
 
-  console.log(breadcrumbs);
-
   return breadcrumbs;
 }
