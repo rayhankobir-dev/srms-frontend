@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 /* eslint-disable react-hooks/rules-of-hooks */
 "use client";
 import api from "@/lib/api";
@@ -8,11 +9,11 @@ import toast from "react-hot-toast";
 import { IMenuItem } from "@/types";
 import { Trash2, FileEdit } from "lucide-react";
 import { Checkbox } from "@/components/ui/Checkbox";
+import { useStockStore } from "@/stores/stockStore";
 import { Button, buttonVariants } from "@/components/ui/Button";
 import { ColumnDef, createColumnHelper } from "@tanstack/react-table";
 import DeleteConfirmation from "@/components/shared/DeleteConfirmation";
 import { DataTableColumnHeader } from "@/components/ui/data-table/DataTableColumnHeader";
-import { useStockStore } from "@/stores/stockStore";
 
 const columnHelper = createColumnHelper<IMenuItem>();
 
@@ -38,6 +39,13 @@ export const columns = [
       </div>
     ),
   }),
+  columnHelper.accessor("meal", {
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Meal" />
+    ),
+    cell: (info) => info.getValue(),
+    enableSorting: true,
+  }),
   columnHelper.accessor("itemName", {
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Item Name" />
@@ -45,32 +53,40 @@ export const columns = [
     cell: (info) => info.getValue(),
     enableSorting: true,
   }),
-  columnHelper.accessor("date", {
+  columnHelper.accessor("thumbnail", {
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Store In" />
+      <DataTableColumnHeader column={column} title="Thumbnail" />
     ),
-    cell: (info) => info.getValue(),
-    enableSorting: true,
+    cell: (info) => (
+      <div className="px-4">
+        <img
+          src={info.getValue() || "/images/thumbnail.png"}
+          alt={info.row.original.itemName}
+          className="w-6"
+        />
+      </div>
+    ),
+    enableSorting: false,
   }),
   columnHelper.accessor("linkedInventory", {
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Store Out" />
+      <DataTableColumnHeader column={column} title="Invenotry" />
+    ),
+    cell: (info) => info.getValue().itemName,
+    enableSorting: true,
+  }),
+  columnHelper.accessor("createdAt", {
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Created At" />
     ),
     cell: (info) => info.getValue(),
     enableSorting: true,
   }),
-  columnHelper.accessor("thumbnail", {
+  columnHelper.accessor("createdBy", {
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Remaining Stock" />
+      <DataTableColumnHeader column={column} title="Created By" />
     ),
-    cell: (info) => info.getValue(),
-    enableSorting: true,
-  }),
-  columnHelper.accessor("meal", {
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Current Stock" />
-    ),
-    cell: (info) => info.getValue(),
+    cell: (info) => info.getValue().firstName,
     enableSorting: true,
   }),
   columnHelper.display({
@@ -101,7 +117,10 @@ export const columns = [
         <div className="flex w-full justify-center gap-1.5">
           <Link
             href={`/store-stocks/${row.original._id}`}
-            className={cx(buttonVariants({ variant: "secondary" }))}
+            className={cx(
+              buttonVariants({ variant: "secondary" }),
+              "w-9 h-9 p-1"
+            )}
           >
             <FileEdit size={16} className="text-primary" />
           </Link>
@@ -112,7 +131,7 @@ export const columns = [
             confirmText="Confirm Delete"
             isLoading={isDeleting}
           >
-            <Button className="px-2 py-2 hover:bg-red-100" variant="ghost">
+            <Button className="px-2 py-2 hover:bg-red-100" variant="secondary">
               <Trash2 size={16} className="text-red-600" />
             </Button>
           </DeleteConfirmation>

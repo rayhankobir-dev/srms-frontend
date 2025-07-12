@@ -92,7 +92,7 @@ function MenusPage() {
     const fetchData = async () => {
       try {
         setIsLoading(true);
-        const { data } = await api.get(endpoints.stocks);
+        const { data } = await api.get(endpoints.menus);
         await new Promise((resolve) => setTimeout(resolve, 1000));
         setMenuItems(data);
       } catch (error: any) {

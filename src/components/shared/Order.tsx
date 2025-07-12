@@ -1,15 +1,17 @@
 "use client";
 import * as Yup from "yup";
 import * as React from "react";
-import { IMenuItem, IPricing } from "@/types";
 import { Divider } from "../ui/Divider";
+import api, { endpoints } from "@/lib/api";
 import { Input } from "@/components/ui/Input";
 import { SelectInput } from "../ui/SelectInput";
 import QuantityInput from "../ui/QuantityInput";
 import { Button } from "@/components/ui/Button";
-import { Check, Trash2, Plus } from "lucide-react";
+import { Check, Trash2, Plus, Printer } from "lucide-react";
+import { IMenuItem, IPricing, ITable } from "@/types";
 import { useSettingStore } from "@/stores/settingStore";
 import { ErrorMessage, FieldArray, FormikProvider, useFormik } from "formik";
+import toast from "react-hot-toast";
 
 interface InvoiceItem {
   menuId: string;
@@ -34,31 +36,75 @@ const defaultItem: InvoiceItem = {
 const formSchema = Yup.object().shape({
   items: Yup.array().of(
     Yup.object().shape({
-      menuId: Yup.string().required(),
-      unit: Yup.string().required(),
+      menuId: Yup.string().required("Please select item"),
+      unit: Yup.string().required("Please select unit"),
       unitPrice: Yup.number().required(),
       quantity: Yup.number().required(),
       inventoryImpact: Yup.number().required(),
     })
   ),
-  tax: Yup.number().required().min(0).max(300),
-  discount: Yup.number().required().min(0).max(100),
+  taxApplied: Yup.number().required().min(0).max(300),
+  discountPercentage: Yup.number().required().min(0).max(100),
 });
 
-export default function InvoiceForm({ menus }: { menus: IMenuItem[] }) {
+const getUnitPrice = (item: InvoiceItem) => {
+  if (!item.menu || !item.menu.pricing) return 0;
+  const pricing = item.menu.pricing.find((p) => p.unit === item.unit);
+  if (!pricing) return 0;
+  return pricing.unitPrice;
+};
+
+type Props = {
+  meal: string;
+  table: ITable;
+  menus: IMenuItem[];
+};
+
+export default function InvoiceForm({ menus, meal, table }: Props) {
   const { settings } = useSettingStore();
+  const [isLoading, setIsLoading] = React.useState(false);
+  const [isConfirmed, setIsConfirmed] = React.useState(false);
 
   const formik = useFormik({
     initialValues: {
       items: [defaultItem],
-      tax: settings?.taxPercentage || 0,
-      discount: 0,
+      taxApplied: settings?.taxPercentage || 0,
+      discountPercentage: 0,
     },
     validationSchema: formSchema,
     onSubmit: async (values) => {
-      console.log(values);
+      const { items, taxApplied, discountPercentage } = values;
+      const subtotal = items.reduce(
+        (sum, item) => sum + item.quantity * getUnitPrice(item),
+        0
+      );
+
+      const discountAmount = (subtotal * discountPercentage) / 100;
+      const taxAmount = ((subtotal - discountAmount) * taxApplied) / 100;
+      const totalAmount = subtotal - discountAmount + taxAmount;
+      setIsLoading(true);
+      try {
+        const { data } = await api.post(endpoints.orders, {
+          meal,
+          table,
+          items,
+          taxApplied,
+          discountPercentage,
+          totalAmount,
+          discountAmount,
+          taxAmount,
+        });
+        console.log(data);
+        setIsConfirmed(true);
+        toast.success("Order created successfully");
+      } catch (error: any) {
+        console.error(error);
+      } finally {
+        setIsLoading(false);
+      }
     },
   });
+
   const { values, setFieldValue } = formik;
 
   const handleMenuChange = (index: number, menuId: string) => {
@@ -68,6 +114,7 @@ export default function InvoiceForm({ menus }: { menus: IMenuItem[] }) {
     setFieldValue(`items[${index}].menuId`, menuId);
     setFieldValue(`items[${index}].menu`, menu);
     setFieldValue(`items[${index}].pricing`, menu.pricing);
+    setFieldValue(`items[${index}].unit`, "");
   };
 
   const handleUnitChange = (index: number, unit: string) => {
@@ -81,22 +128,13 @@ export default function InvoiceForm({ menus }: { menus: IMenuItem[] }) {
     }
   };
 
-  const getUnitPrice = (item: InvoiceItem) => {
-    if (!item.menu || !item.menu.pricing) return 0;
-    const pricing = item.menu.pricing.find((p) => p.unit === item.unit);
-    if (!pricing) return 0;
-    return pricing.unitPrice;
-  };
-
   const subtotal = values.items.reduce(
     (sum, item: InvoiceItem) => sum + item.quantity * getUnitPrice(item),
     0
   );
-  const discountAmount = (subtotal * values.discount) / 100;
-  const taxAmount = ((subtotal - discountAmount) * values.tax) / 100;
+  const discountAmount = (subtotal * values.discountPercentage) / 100;
+  const taxAmount = ((subtotal - discountAmount) * values.taxApplied) / 100;
   const grandTotal = subtotal - discountAmount + taxAmount;
-
-  console.log(values);
 
   return (
     <FormikProvider value={formik}>
@@ -133,7 +171,7 @@ export default function InvoiceForm({ menus }: { menus: IMenuItem[] }) {
                 <tbody>
                   {values.items.map((item: InvoiceItem, index) => (
                     <tr key={index} className="border-b">
-                      <td className="px-2 py-4 pl-4">{index + 1}</td>
+                      <td className="px-2 py-4 pl-4">#{index + 1}</td>
                       <td className="px-2 py-4 pr-4">
                         <SelectInput
                           placeholder="Select item"
@@ -258,7 +296,7 @@ export default function InvoiceForm({ menus }: { menus: IMenuItem[] }) {
                     type="number"
                     min="0"
                     max="100"
-                    {...formik.getFieldProps("discount")}
+                    {...formik.getFieldProps("discountPercentage")}
                   />
                 </div>
                 <div className="flex-1">
@@ -268,7 +306,7 @@ export default function InvoiceForm({ menus }: { menus: IMenuItem[] }) {
                   <Input
                     type="number"
                     min="0"
-                    {...formik.getFieldProps("tax")}
+                    {...formik.getFieldProps("taxApplied")}
                   />
                 </div>
               </div>
@@ -296,8 +334,16 @@ export default function InvoiceForm({ menus }: { menus: IMenuItem[] }) {
             </div>
           </div>
           <Divider />
-          <div className="flex justify-end px-4">
-            <Button type="submit">
+          <div className="flex justify-end gap-3.5 px-4">
+            <Button disabled={isLoading || !isConfirmed} isLoading={isLoading}>
+              <Printer size={18} /> Invoice
+            </Button>
+            <Button
+              disabled={isLoading}
+              isLoading={isLoading}
+              loadingText="Confirming..."
+              type="submit"
+            >
               <Check size={18} /> Confirm Order
             </Button>
           </div>

@@ -1,15 +1,15 @@
 /* eslint-disable react-hooks/rules-of-hooks */
-import api, { endpoints } from "@/lib/api";
 import { useState } from "react";
 import { IOrder } from "@/types";
 import toast from "react-hot-toast";
-import { FileEdit, Trash2 } from "lucide-react";
+import api, { endpoints } from "@/lib/api";
+import { Eye, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Checkbox } from "@/components/ui/Checkbox";
+import { useOrderStore } from "@/stores/orderStore";
 import { ColumnDef, createColumnHelper } from "@tanstack/react-table";
 import DeleteConfirmation from "@/components/shared/DeleteConfirmation";
 import { DataTableColumnHeader } from "@/components/ui/data-table/DataTableColumnHeader";
-import { useOrderStore } from "@/stores/orderStore";
 
 const columnHelper = createColumnHelper<IOrder>();
 
@@ -37,42 +37,42 @@ export const columns = [
   }),
   columnHelper.accessor("meal", {
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="First Name" />
+      <DataTableColumnHeader column={column} title="Meal" />
     ),
     cell: (info) => info.getValue(),
     enableSorting: true,
   }),
-  columnHelper.accessor("table", {
+  columnHelper.accessor("_id", {
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Last Name" />
+      <DataTableColumnHeader column={column} title="#Order ID" />
     ),
     cell: (info) => info.getValue(),
     enableSorting: true,
   }),
   columnHelper.accessor("status", {
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Email" />
+      <DataTableColumnHeader column={column} title="Status" />
     ),
     cell: (info) => info.getValue(),
     enableSorting: true,
   }),
   columnHelper.accessor("totalAmount", {
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Phone" />
+      <DataTableColumnHeader column={column} title="Order Amount" />
     ),
     cell: (info) => info.getValue(),
     enableSorting: true,
   }),
   columnHelper.accessor("taxAmount", {
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Address" />
+      <DataTableColumnHeader column={column} title="Tax Amount" />
     ),
     cell: (info) => info.getValue(),
     enableSorting: false,
   }),
   columnHelper.accessor("createdAt", {
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Joining Date" />
+      <DataTableColumnHeader column={column} title="Ordered Date" />
     ),
     cell: (info) => {
       const value = info.getValue();
@@ -110,12 +110,12 @@ export const columns = [
 
       return (
         <div className="flex w-full justify-center gap-1.5">
-          <Button className="px-2 py-2 hover:bg-blue-100" variant="ghost">
-            <FileEdit size={16} className="text-blue-600" />
+          <Button className="px-2 py-2 hover:bg-blue-100" variant="secondary">
+            <Eye size={16} className="text-blue-600" />
           </Button>
 
           <DeleteConfirmation onConfirm={handleDelete} isLoading={isDeleting}>
-            <Button className="px-2 py-2 hover:bg-red-100" variant="ghost">
+            <Button className="px-2 py-2 hover:bg-red-100" variant="secondary">
               <Trash2 size={16} className="text-red-600" />
             </Button>
           </DeleteConfirmation>

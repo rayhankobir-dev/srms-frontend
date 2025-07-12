@@ -206,8 +206,6 @@
 }
 
 #nprogress .bar {
-  background: var(--primary);
-  position: fixed;
-  z-index: 999;
-  height: 7px;
+  background: #2563eb !important;
+  height: 4px !important;
 }

@@ -92,14 +92,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     {
       name: "Manage Inventory",
       icon: BookText,
+      href: "/inventory",
       notifications: false,
       active: true,
       children: [
-        {
-          name: "Reports",
-          href: "/inventory",
-          active: true,
-        },
         {
           name: "Store Stocks",
           href: "/inventory/store",

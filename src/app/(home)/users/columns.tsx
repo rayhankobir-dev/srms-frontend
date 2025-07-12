@@ -184,14 +184,14 @@ export const columns = [
               />
             }
           >
-            <Button className="px-2 py-2 hover:bg-blue-100" variant="ghost">
+            <Button className="px-2 py-2 hover:bg-blue-100" variant="secondary">
               <FileEdit size={16} className="text-blue-600" />
             </Button>
           </FormDialog>
 
           {/* TODO: You can't delete yourself */}
           <DeleteConfirmation onConfirm={handleDelete} isLoading={isDeleting}>
-            <Button className="px-2 py-2 hover:bg-red-100" variant="ghost">
+            <Button className="px-2 py-2 hover:bg-red-100" variant="secondary">
               <Trash2 size={16} className="text-red-600" />
             </Button>
           </DeleteConfirmation>
