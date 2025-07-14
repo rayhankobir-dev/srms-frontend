@@ -1,8 +1,7 @@
-
-import { Card } from "@/components/ui/Card"
-import { cn } from "@/lib/utils"
-import { Donut, EggFried, Ham, Soup } from "lucide-react"
-import Link from "next/link"
+import { Card } from "@/components/ui/Card";
+import { cn } from "@/lib/utils";
+import { Donut, EggFried, Ham, Soup } from "lucide-react";
+import Link from "next/link";
 
 function DiningPage() {
   const data = [
@@ -17,7 +16,7 @@ function DiningPage() {
       color: "bg-green-500",
     },
     {
-      title: "Super",
+      title: "Supper",
       value: 23,
       color: "bg-red-500",
     },
@@ -36,7 +35,7 @@ function DiningPage() {
       value: 23,
       color: "bg-purple-500",
     },
-  ]
+  ];
   return (
     <div className="space-y-6 px-4">
       <section className="space-y-4">
@@ -82,10 +81,10 @@ function DiningPage() {
               Lunch
             </Card>
           </Link>
-          <Link href="/dining/super">
+          <Link href="/dining/supper">
             <Card className="flex cursor-pointer flex-col items-center justify-center gap-2.5 bg-green-50 px-3 py-5 text-lg font-medium text-green-500 md:py-8">
               <Donut size={30} />
-              Super
+              Supper
             </Card>
           </Link>
           <Link href="/dining/dinner">
@@ -97,7 +96,7 @@ function DiningPage() {
         </div>
       </section>
     </div>
-  )
+  );
 }
 
-export default DiningPage
+export default DiningPage;

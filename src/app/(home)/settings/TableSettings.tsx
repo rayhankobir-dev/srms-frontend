@@ -9,19 +9,16 @@ import {
   CardTitle,
 } from "@/components/ui/Card";
 import * as Yup from "yup";
-import { cx } from "@/lib/utils";
 import toast from "react-hot-toast";
+import { Save } from "lucide-react";
 import { ITable, User } from "@/types";
-import { tv } from "tailwind-variants";
 import api, { endpoints } from "@/lib/api";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { Badge } from "@/components/ui/Badge";
-import { Button } from "@/components/ui/Button";
+import Table from "@/components/shared/Table";
 import { Input } from "@/components/ui/Input";
 import { Label } from "@/components/ui/Label";
+import { Button } from "@/components/ui/Button";
 import Spinner from "@/components/shared/Spinner";
-import { Edit, Save, Trash2 } from "lucide-react";
 import { useTableStore } from "@/stores/tableStore";
 import { SelectInput } from "@/components/ui/SelectInput";
 import { ErrorMessage, FormikProvider, useFormik } from "formik";
@@ -190,7 +187,7 @@ function TableSettings() {
               key={index}
               serial={String(index + 1)}
               table={table}
-              variant={
+              status={
                 selectedTable?._id === table._id ? "SELECTED" : table.status
               }
               onSelect={setSelectedTable}
@@ -198,106 +195,6 @@ function TableSettings() {
           ))
         )}
       </CardFooter>
-    </Card>
-  );
-}
-
-type TableProps = {
-  serial?: string;
-  className?: string;
-  name?: string;
-  isEditMode?: boolean;
-  href?: string;
-  table: ITable;
-  variant?: "RESERVED" | "FREE" | "SELECTED";
-  onSelect?: (table: ITable) => void;
-};
-
-const tableStatusVariants = tv({
-  base: ["w-40 relative overflow-hidden group"],
-  variants: {
-    variant: {
-      RESERVED: ["bg-rose-100", "text-gray-900 dark:text-gray-50"],
-      FREE: ["bg-white dark:bg-dark", "dark:text-white"],
-      SELECTED: ["bg-gray-100"],
-    },
-  },
-});
-
-export function Table({
-  isEditMode = true,
-  className,
-  serial,
-  table,
-  variant,
-  href,
-  ...props
-}: TableProps) {
-  const [isDeleting, setIsDeleting] = useState(false);
-  const { removeTable } = useTableStore();
-  const router = useRouter();
-
-  const handleDelete = async () => {
-    try {
-      setIsDeleting(true);
-      await api.delete(`${endpoints.tables}/${table._id}`);
-      new Promise((resolve) => setTimeout(resolve, 1000));
-      removeTable(table._id);
-    } catch (error: any) {
-      toast.error(error?.response?.data?.message || error.message);
-    } finally {
-      setIsDeleting(false);
-    }
-  };
-
-  const handleClick = () => {
-    if (href) {
-      router.push(href);
-    }
-  };
-
-  return (
-    <Card
-      onClick={handleClick}
-      className={cx(
-        "cursor-pointer",
-        tableStatusVariants({ variant: variant }),
-        className
-      )}
-    >
-      <CardContent className="relative aspect-square">
-        <span className="absolute top-2 left-2 text-xs">TB-{serial}</span>
-        <Badge className="absolute top-2 right-2">
-          {table.assignedStaff.firstName}
-        </Badge>
-        <div className="h-full flex items-end justify-center">
-          <img src="/images/table.png" alt={table.name} className="h-32 w-32" />
-        </div>
-        <CardTitle className="text-sm text-center truncate">
-          {table.name}
-        </CardTitle>
-      </CardContent>
-
-      {isEditMode && (
-        <div className="cursor-pointer group-hover:flex hidden absolute top-0 right-0 w-full h-full justify-center items-center gap-1.5 bg-gray-800 bg-opacity-80 backdrop-blur-sm text-white duration-300">
-          <Button
-            onClick={() => props.onSelect?.(table)}
-            variant="secondary"
-            className="p-2"
-          >
-            <Edit size={16} />
-          </Button>
-          <Button
-            isLoading={isDeleting}
-            loadingText=""
-            onClick={handleDelete}
-            variant="destructive"
-            className="p-2"
-          >
-            {!isDeleting && <Trash2 size={16} />}
-          </Button>
-        </div>
-      )}
     </Card>
   );
 }

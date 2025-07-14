@@ -116,7 +116,7 @@ export const columns = [
       return (
         <div className="flex w-full justify-center gap-1.5">
           <Link
-            href={`/store-stocks/${row.original._id}`}
+            href={`/menus/${row.original._id}`}
             className={cx(
               buttonVariants({ variant: "secondary" }),
               "w-9 h-9 p-1"

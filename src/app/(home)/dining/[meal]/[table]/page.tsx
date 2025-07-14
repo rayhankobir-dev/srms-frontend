@@ -1,26 +1,31 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
-import { IMenuItem, ITable } from "@/types";
 import { Table, User } from "lucide-react";
 import api, { endpoints } from "@/lib/api";
-import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import Order from "@/components/shared/Order";
+import { IMenuItem, IOrder, ITable } from "@/types";
+import { useParams, useRouter } from "next/navigation";
 import { Loader } from "@/components/ui/LoadingScreen";
+import InvoiceForm from "@/components/shared/InvoiceForm";
 
 export default function OrderPage() {
   const [table, setTable] = useState<ITable | null>(null);
   const [menus, setMenus] = useState<IMenuItem[]>([]);
+  const [order, setOrder] = useState<IOrder | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   const params = useParams();
+  const router = useRouter();
+
   const meal = params.meal;
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         setIsLoading(true);
-        const { data } = await api.get(endpoints.menus);
+        const { data } = await api.get(
+          `${endpoints.menus}?meal=${String(meal).toUpperCase()}`
+        );
         setMenus(data);
 
         if (params.table) {
@@ -28,7 +33,15 @@ export default function OrderPage() {
             `${endpoints.tables}/${params.table}`
           );
           setTable(tableInfo);
-          console.log(tableInfo);
+          if (tableInfo.status === "FREE") return;
+
+          const { data: orderInfo } = await api.get(
+            `${endpoints.tables}/${params.table}/orders?limit=1`
+          );
+
+          if (orderInfo.length === 0) return;
+          console.log(orderInfo[0]);
+          setOrder(orderInfo[0]);
         }
       } catch (error: any) {
         console.error(error);
@@ -38,7 +51,16 @@ export default function OrderPage() {
     };
 
     fetchData();
-  }, [params.table]);
+  }, [meal, params.table]);
+
+  useEffect(() => {
+    const orderMeal = order?.meal.toLowerCase();
+    if (order && meal && meal !== orderMeal) {
+      router.replace(
+        `/dining/${String(order?.meal).toLowerCase()}/${order.table}`
+      );
+    }
+  }, [meal, order, router]);
 
   return (
     <div className="space-y-6">
@@ -76,7 +98,9 @@ export default function OrderPage() {
             </div>
           </div>
 
-          <Order
+          <InvoiceForm
+            isEditMode={Boolean(order)}
+            initialsValues={order}
             meal={String(meal).toUpperCase()}
             table={table}
             menus={menus}

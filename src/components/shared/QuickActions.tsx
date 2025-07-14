@@ -32,11 +32,11 @@ export default function QuickActions() {
             Lunch
           </Link>
           <Link
-            href="/dining/super"
+            href="/dining/supper"
             className="flex cursor-pointer flex-col items-center justify-center gap-0.5 border-r px-5 py-3.5 duration-300 hover:bg-muted"
           >
             <Donut />
-            Super
+            Supper
           </Link>
           <Link
             href="/dining/dinner"

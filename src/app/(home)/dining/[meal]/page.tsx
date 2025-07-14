@@ -6,8 +6,8 @@ import { ITable } from "@/types";
 import { Table2 } from "lucide-react";
 import api, { endpoints } from "@/lib/api";
 import { useParams } from "next/navigation";
+import Table from "@/components/shared/Table";
 import React, { useEffect, useState } from "react";
-import { Table } from "../../settings/TableSettings";
 import { Loader } from "@/components/ui/LoadingScreen";
 import { buttonVariants } from "@/components/ui/Button";
 import { Card, CardContent, CardHeader } from "@/components/ui/Card";
@@ -64,10 +64,11 @@ function BreakfastPage() {
             <div className="flex flex-wrap gap-4">
               {tables.map((table, index) => (
                 <Table
-                  href={`/dining/${params.meal}/${table._id}`}
+                  href={`/dining/${params.meal}/${table._id}?status=${table.status}`}
                   isEditMode={false}
                   key={index}
                   table={table}
+                  status={table.status}
                   serial={String(index + 1)}
                 />
               ))}

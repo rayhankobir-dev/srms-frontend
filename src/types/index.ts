@@ -113,6 +113,7 @@ export type IOrderItem = {
   menu: Partial<IMenuItem>;
   itemName: string;
   quantity: number;
+  unit: string;
   unitPrice: number;
   inventoryImpact: number;
 };
@@ -128,11 +129,11 @@ export interface IOrder {
   totalAmount: number;
   discountPercent: number;
   discountAmount: string;
-  taxApplied: LinkedUser;
-  taxAmount: LinkedUser;
+  taxApplied: number;
+  taxAmount: number;
   paymentMethod: IPaymentMethod;
   paymentStatus: IPaymentStatus;
-  items: IMenuItem[];
+  items: IOrderItem[];
   createdBy: LinkedUser;
   updatedBy: LinkedUser;
   createdAt: string;

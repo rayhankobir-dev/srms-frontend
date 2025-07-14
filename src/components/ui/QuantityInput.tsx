@@ -1,17 +1,22 @@
+import { cn } from "@/lib/utils";
 import React from "react";
 
 interface QuantityInputProps {
+  className?: string;
   value: number;
   onChange: (value: number) => void;
   min?: number;
   max?: number;
+  disabled?: boolean;
 }
 
 const QuantityInput: React.FC<QuantityInputProps> = ({
+  className = "",
   value,
   onChange,
   min = 1,
   max = 100,
+  disabled = false,
 }) => {
   const handleDecrease = () => {
     if (value > min) {
@@ -36,12 +41,17 @@ const QuantityInput: React.FC<QuantityInputProps> = ({
   };
 
   return (
-    <div className="flex items-center border rounded-md w-max overflow-hidden">
+    <div
+      className={cn(
+        "flex items-center border rounded-md w-max overflow-hidden",
+        className
+      )}
+    >
       <button
         type="button"
         onClick={handleDecrease}
         className="px-3 py-1 rounded-r-none text-lg font-bold text-gray-700 hover:bg-gray-200 disabled:opacity-50"
-        disabled={value <= min}
+        disabled={disabled || value <= min}
       >
         −
       </button>
@@ -50,6 +60,7 @@ const QuantityInput: React.FC<QuantityInputProps> = ({
         min={min}
         max={max}
         value={value}
+        disabled={disabled}
         onChange={handleChange}
         className="w-14 text-center outline-none border-x px-1.5 py-1"
       />
@@ -57,7 +68,7 @@ const QuantityInput: React.FC<QuantityInputProps> = ({
         type="button"
         onClick={handleIncrease}
         className="px-3 py-1 rounded-l-none text-lg font-bold text-gray-700 hover:bg-gray-200 disabled:opacity-50"
-        disabled={value >= max}
+        disabled={disabled || value >= max}
       >
         +
       </button>

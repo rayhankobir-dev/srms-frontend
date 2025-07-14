@@ -61,8 +61,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           active: false,
         },
         {
-          name: "Super",
-          href: "/dining/super",
+          name: "Supper",
+          href: "/dining/supper",
           active: false,
         },
         {
@@ -126,8 +126,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           active: false,
         },
         {
-          name: "Super",
-          href: "/dining/super",
+          name: "Supper",
+          href: "/dining/supper",
           active: false,
         },
         {
