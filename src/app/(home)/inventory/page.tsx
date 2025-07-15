@@ -1,12 +1,11 @@
-"use client"
-import AreaChartDemo from "@/components/charts/AreaChart"
-import { Card } from "@/components/ui/Card"
-import { ChartConfig } from "@/components/ui/Chart"
-import { Loader } from "@/components/ui/LoadingScreen"
-import api from "@/lib/api"
-import { cn } from "@/lib/utils"
-import { useEffect, useState } from "react"
-import toast from "react-hot-toast"
+"use client";
+import toast from "react-hot-toast";
+import api, { endpoints } from "@/lib/api";
+import { useEffect, useState } from "react";
+import { ChartConfig } from "@/components/ui/Chart";
+import { Loader } from "@/components/ui/LoadingScreen";
+import AreaChartDemo from "@/components/charts/AreaChart";
+import InventoryMetrics from "./InventoryMetrics";
 
 const chartConfig = {
   visitors: {
@@ -20,69 +19,45 @@ const chartConfig = {
     label: "Total Sales",
     color: "hsl(var(--chart-2))",
   },
-} satisfies ChartConfig
+} satisfies ChartConfig;
 
 function InventoryPage() {
-  const [isLoading, setIsLoading] = useState(true)
-  const [data, setData] = useState<any>(null)
+  const [isLoading, setIsLoading] = useState(true);
+  const [data, setData] = useState<any>(null);
 
   const fetchData = async () => {
     try {
-      const { data } = await api.get("/restaurant-stocks/metrics")
-      await new Promise((resolve) => setTimeout(resolve, 1500))
+      const { data } = await api.get(endpoints.metrics.inventory);
+      await new Promise((resolve) => setTimeout(resolve, 1500));
 
-      setData(data)
-      console.log(data)
+      setData(data);
+      console.log(data);
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || error.message)
+      toast.error(error?.response?.data?.message || error.message);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   useEffect(() => {
-    fetchData()
-  }, [])
+    fetchData();
+  }, []);
 
   if (isLoading)
     return (
       <div className="flex h-[80vh] items-center justify-center">
         <Loader />
       </div>
-    )
+    );
 
   return (
     <div className="space-y-6 px-4">
-      <section className="space-y-4">
-        <div>
-          <h2 className="text-xl font-medium">Inventory Management</h2>
-          <p className="font-light">Manage your inventory and stocks</p>
-        </div>
+      <InventoryMetrics initialData={data} />
 
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
-          {data?.metrics?.map((item: any) => (
-            <Card key={item.title} className="p-3">
-              <div className="flex space-x-3">
-                <div className={cn("w-1 shrink-0 rounded", item.color)} />
-                <dt className="text-tremor-default text-tremor-content dark:text-dark-tremor-content flex w-full items-center justify-between space-x-3 truncate">
-                  <span className="truncate font-medium">{item.title}</span>
-                </dt>
-              </div>
-              <div className="mt-2 flex items-center gap-2 pb-5">
-                <dd className="text-tremor-metric text-tremor-content-strong dark:text-dark-tremor-content-strong font-semibold">
-                  {item.value}
-                </dd>
-                <span className="text-sm font-medium">{item?.unit}</span>
-              </div>
-            </Card>
-          ))}
-        </div>
-      </section>
-
-      <section className="space-y-4">
+      <section className="space-y-2.5">
         <div>
-          <h2 className="text-xl font-medium">Inventory Stastics</h2>
-          <p>Manage your inventory and stocks</p>
+          <h2 className="text-lg font-medium">Inventory Stastics</h2>
+          <p className="text-sm font-light">Inventory and stocks statistics</p>
         </div>
 
         <div>
@@ -90,7 +65,7 @@ function InventoryPage() {
         </div>
       </section>
     </div>
-  )
+  );
 }
 
-export default InventoryPage
+export default InventoryPage;

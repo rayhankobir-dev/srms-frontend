@@ -1,72 +1,18 @@
-import { Card } from "@/components/ui/Card";
-import { cn } from "@/lib/utils";
-import { Donut, EggFried, Ham, Soup } from "lucide-react";
+"use client";
 import Link from "next/link";
+import { Card } from "@/components/ui/Card";
+import DiningMetrics from "./DiningMetrics";
+import { Donut, EggFried, Ham, Soup } from "lucide-react";
 
 function DiningPage() {
-  const data = [
-    {
-      title: "Breakfast",
-      value: 23,
-      color: "bg-blue-500",
-    },
-    {
-      title: "Lunch",
-      value: 23,
-      color: "bg-green-500",
-    },
-    {
-      title: "Supper",
-      value: 23,
-      color: "bg-red-500",
-    },
-    {
-      title: "Dinner",
-      value: 23,
-      color: "bg-yellow-500",
-    },
-    {
-      title: "Total Tables",
-      value: 23,
-      color: "bg-purple-500",
-    },
-    {
-      title: "Reserved Tables",
-      value: 23,
-      color: "bg-purple-500",
-    },
-  ];
   return (
     <div className="space-y-6 px-4">
       <section className="space-y-4">
         <div>
-          <h2 className="text-xl font-medium">Dining Management</h2>
-          <p className="font-light">Manage your dining and reservations</p>
-        </div>
-
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
-          {data.map((item) => (
-            <Card key={item.title} className="p-3">
-              <div className="flex space-x-3">
-                <div className={cn("w-1 shrink-0 rounded", item.color)} />
-                <dt className="text-tremor-default text-tremor-content dark:text-dark-tremor-content flex w-full items-center justify-between space-x-3 truncate">
-                  <span className="truncate font-medium">{item.title}</span>
-                </dt>
-              </div>
-              <div className="mt-2 pb-5">
-                <dd className="text-tremor-metric text-tremor-content-strong dark:text-dark-tremor-content-strong font-semibold">
-                  23
-                </dd>
-              </div>
-            </Card>
-          ))}
-        </div>
-      </section>
-
-      <section className="space-y-4">
-        <div>
-          <h2 className="text-xl font-medium">Reservations</h2>
-          <p>Make sure choose right meal and table</p>
+          <h2 className="text-lg font-medium">Reservations</h2>
+          <p className="text-sm font-light">
+            Make sure choose right meal and table
+          </p>
         </div>
         <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
           <Link href="/dining/breakfast">
@@ -95,6 +41,8 @@ function DiningPage() {
           </Link>
         </div>
       </section>
+
+      <DiningMetrics />
     </div>
   );
 }

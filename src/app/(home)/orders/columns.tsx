@@ -13,13 +13,13 @@ import { cx } from "@/lib/utils";
 import toast from "react-hot-toast";
 import api, { endpoints } from "@/lib/api";
 import { Eye, Trash2 } from "lucide-react";
+import { Divider } from "@/components/ui/Divider";
 import { Checkbox } from "@/components/ui/Checkbox";
 import { useOrderStore } from "@/stores/orderStore";
 import { Button, buttonVariants } from "@/components/ui/Button";
 import { ColumnDef, createColumnHelper } from "@tanstack/react-table";
 import DeleteConfirmation from "@/components/shared/DeleteConfirmation";
 import { DataTableColumnHeader } from "@/components/ui/data-table/DataTableColumnHeader";
-import { Divider } from "@/components/ui/Divider";
 
 const columnHelper = createColumnHelper<IOrder>();
 
@@ -174,21 +174,21 @@ export const columns = [
                   <div className="mt-3 w-full">
                     <h4 className="text-md font-semibold mb-1">#Order Items</h4>
                     <div className="overflow-auto rounded py-1">
-                      <table className="w-full text-sm mb-6">
+                      <table className="w-full text-sm mb-4">
                         <thead>
-                          <tr className="border-b text-right [&>th]:py-2 [&>th]:font-semibold">
-                            <th className="w-1/4 text-left">Menu</th>
+                          <tr className="border-b text-center [&>th]:py-2 [&>th]:font-semibold">
+                            <th className="w-2/5 text-left">Menu</th>
                             <th>Qty</th>
                             <th>Unit</th>
                             <th>Unit Price</th>
-                            <th>Total</th>
+                            <th className="text-right">Total</th>
                           </tr>
                         </thead>
                         <tbody>
                           {row.original.items.map((item, i) => (
                             <tr
                               key={i}
-                              className="w-1/4 text-right border-b [&>td]:py-2"
+                              className="w-1/4 text-center border-b [&>td]:py-2"
                             >
                               <td className="text-left">
                                 {item.menu?.itemName ?? "N/A"}
@@ -196,7 +196,9 @@ export const columns = [
                               <td>{item.quantity}</td>
                               <td>{item.unit}</td>
                               <td>{item.unitPrice}</td>
-                              <td>{item.unitPrice * item.quantity}</td>
+                              <td className="text-right">
+                                {item.unitPrice * item.quantity}
+                              </td>
                             </tr>
                           ))}
                         </tbody>
@@ -208,11 +210,22 @@ export const columns = [
                       </div>
                       <div className="flex justify-between items-center mt-2 [&>h3]:font-medium [&>p]:font-medium">
                         <h3>Tax Amount</h3>
-                        <p>{row.original.taxAmount}</p>
+                        <p className="space-x-3.5">
+                          <span className="font-light text-sm opacity-60">
+                            ({row.original.taxApplied}%)
+                          </span>
+                          <span>{row.original.taxAmount}</span>
+                        </p>
                       </div>
                       <div className="flex justify-between items-center mt-2 [&>h3]:font-medium [&>p]:font-medium">
                         <h3>Discount Amount</h3>
-                        <p>{row.original.discountAmount}</p>
+                        <p className="space-x-3.5">
+                          <span className="font-light text-sm opacity-60">
+                            ({row.original.discountPercentage}%)
+                          </span>
+
+                          <span>{row.original.discountAmount}</span>
+                        </p>
                       </div>
 
                       <Divider className="my-3" />

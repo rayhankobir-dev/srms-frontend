@@ -127,7 +127,7 @@ export interface IOrder {
   menu: Partial<IMenuItem>;
   status: IOrderStatus;
   totalAmount: number;
-  discountPercent: number;
+  discountPercentage: number;
   discountAmount: string;
   taxApplied: number;
   taxAmount: number;

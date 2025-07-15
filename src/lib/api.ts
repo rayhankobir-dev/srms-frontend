@@ -18,6 +18,11 @@ export const endpoints = {
   orders: "/orders",
   stocks: "/stocks",
   menus: "/menus",
+  metrics: {
+    inventory: "/metrics/inventory",
+    dining: "/metrics/dining",
+    orders: "/metrics/dashboard",
+  },
 };
 
 const api = axios.create({

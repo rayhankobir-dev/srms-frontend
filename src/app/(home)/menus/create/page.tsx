@@ -8,6 +8,7 @@ import {
   CardTitle,
 } from "@/components/ui/Card";
 import * as Yup from "yup";
+import toast from "react-hot-toast";
 import { meals } from "@/constants/data";
 import api, { endpoints } from "@/lib/api";
 import { useEffect, useState } from "react";
@@ -17,7 +18,6 @@ import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { SelectInput } from "@/components/ui/SelectInput";
 import { ErrorMessage, FormikProvider, getIn, useFormik } from "formik";
-import toast from "react-hot-toast";
 
 const createMenuSchema = Yup.object().shape({
   itemName: Yup.string().required("Item name is required"),

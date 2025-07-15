@@ -1,22 +1,6 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable react-hooks/exhaustive-deps */
 "use client";
-import { columns } from "./columns";
-import { Input } from "@/components/ui/Input";
-import { Button, buttonVariants } from "@/components/ui/Button";
-import { DataTable } from "@/components/ui/data-table/DataTable";
-import DeleteConfirmation from "@/components/shared/DeleteConfirmation";
-import {
-  Calendar1,
-  FileSpreadsheet,
-  Plus,
-  Printer,
-  Trash2,
-  X,
-} from "lucide-react";
-import { exportTableToPDF, exportToExcel } from "@/lib/export";
-import { useEffect, useRef, useState } from "react";
-import { toast } from "react-hot-toast";
+
 import {
   ColumnFiltersState,
   getCoreRowModel,
@@ -25,11 +9,18 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import Link from "next/link";
-import { cx } from "@/lib/utils";
+import { columns } from "./columns";
+import { toast } from "react-hot-toast";
 import api, { endpoints } from "@/lib/api";
+import { Input } from "@/components/ui/Input";
+import { exportToExcel } from "@/lib/export";
+import { Button } from "@/components/ui/Button";
 import { useDebouncedCallback } from "use-debounce";
+import { useEffect, useRef, useState } from "react";
 import { useOrderStore } from "@/stores/orderStore";
+import { DataTable } from "@/components/ui/data-table/DataTable";
+import { Calendar1, FileSpreadsheet, Trash2, X } from "lucide-react";
+import DeleteConfirmation from "@/components/shared/DeleteConfirmation";
 
 function UsersPage() {
   const [isFetching, setIsFetching] = useState(true);
@@ -160,13 +151,6 @@ function UsersPage() {
                 </Button>
               </DeleteConfirmation>
             )}
-
-            <Button
-              onClick={() => exportTableToPDF(orders, columns)}
-              variant="secondary"
-            >
-              <Printer className="text-primary" size={18} />
-            </Button>
             <Button onClick={() => exportToExcel(orders)} variant="secondary">
               <FileSpreadsheet className="text-green-700" size={18} />
             </Button>
