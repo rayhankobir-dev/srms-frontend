@@ -161,13 +161,6 @@ function UsersPage() {
               </DeleteConfirmation>
             )}
 
-            <Link
-              className={cx(buttonVariants({ variant: "secondary" }))}
-              href="/users/create"
-            >
-              <Plus size={18} />
-              Add
-            </Link>
             <Button
               onClick={() => exportTableToPDF(orders, columns)}
               variant="secondary"
