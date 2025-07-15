@@ -1,8 +1,9 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-hooks/rules-of-hooks */
-import api, { endpoints } from "@/lib/api";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { IInventory } from "@/types";
+import api, { endpoints } from "@/lib/api";
 import { Trash2, FileEdit } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Checkbox } from "@/components/ui/Checkbox";
@@ -12,6 +13,7 @@ import { ColumnDef, createColumnHelper } from "@tanstack/react-table";
 import RestaurantForm, { RestaurantFormValues } from "./ResturantForm";
 import DeleteConfirmation from "@/components/shared/DeleteConfirmation";
 import { DataTableColumnHeader } from "@/components/ui/data-table/DataTableColumnHeader";
+import { format } from "date-fns";
 
 const columnHelper = createColumnHelper<IInventory>();
 
@@ -58,7 +60,7 @@ export const columns = [
   }),
   columnHelper.accessor("cooked", {
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Cooked" />
+      <DataTableColumnHeader column={column} title="Serveable" />
     ),
     cell: (info) => (
       <div>
@@ -92,6 +94,37 @@ export const columns = [
     ),
     enableSorting: true,
   }),
+  columnHelper.accessor("createdBy", {
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Created By" />
+    ),
+    cell: (info) => (
+      <div>
+        {info.getValue().firstName} {info.getValue().lastName}
+      </div>
+    ),
+    enableSorting: true,
+  }),
+  columnHelper.accessor("updatedBy", {
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Updated By" />
+    ),
+    cell: (info) => (
+      <div>
+        {info.getValue().firstName} {info.getValue().lastName}
+      </div>
+    ),
+    enableSorting: true,
+  }),
+  columnHelper.accessor("updatedAt", {
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Updated At" />
+    ),
+    cell: (info) => (
+      <div>{format(new Date(info.getValue()), "MMMM d, yyyy hh:mm a")}</div>
+    ),
+    enableSorting: true,
+  }),
   columnHelper.display({
     id: "actions",
     header: () => <div className="w-full text-center">Actions</div>,
@@ -107,11 +140,13 @@ export const columns = [
       ) => {
         try {
           setIsUpdating(true);
+          const inStock = values.newStock - values.cooked;
           const { data } = await api.put(
             `${endpoints.inventory}/${row.original._id}`,
-            values
+            { ...values, inStock }
           );
           await new Promise((resolve) => setTimeout(resolve, 1500));
+          console.log(data);
           updateInventory(row.original._id, data);
           resetForm();
           setDialogOpen(false);

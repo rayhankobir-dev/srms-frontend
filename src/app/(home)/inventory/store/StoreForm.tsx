@@ -61,7 +61,6 @@ export default function StoreForm({
     enableReinitialize: true,
   });
 
-  console.log(formik.errors);
   return (
     <form onSubmit={formik.handleSubmit}>
       <Card className="overflow-hidden">
@@ -95,8 +94,29 @@ export default function StoreForm({
               </div>
 
               <div className="space-y-1">
+                <Label required htmlFor="unit">
+                  Unit
+                </Label>
+                <div className="space-y-0.5">
+                  <Input
+                    type="text"
+                    placeholder="Unit"
+                    hasError={
+                      formik.touched.unit && formik.errors.unit !== undefined
+                    }
+                    {...formik.getFieldProps("unit")}
+                  />
+                  <ErrorMessage
+                    className="text-xs text-rose-600"
+                    name="unit"
+                    component="p"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1">
                 <Label required htmlFor="storeIn">
-                  Store in
+                  Incomming stocks
                 </Label>
                 <div className="space-y-0.5">
                   <Input
@@ -111,28 +131,6 @@ export default function StoreForm({
                   <ErrorMessage
                     className="text-xs text-rose-600"
                     name="storeIn"
-                    component="p"
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-1">
-                <Label required htmlFor="storeOut">
-                  Outgoing stocks
-                </Label>
-                <div className="space-y-0.5">
-                  <Input
-                    type="number"
-                    placeholder="Outgoing stocks"
-                    hasError={
-                      formik.touched.storeOut &&
-                      formik.errors.storeOut !== undefined
-                    }
-                    {...formik.getFieldProps("storeOut")}
-                  />
-                  <ErrorMessage
-                    className="text-xs text-rose-600"
-                    name="storeOut"
                     component="p"
                   />
                 </div>
@@ -161,43 +159,61 @@ export default function StoreForm({
               </div>
 
               <div className="space-y-1">
-                <Label required htmlFor="current">
-                  Current stocks
+                <Label required htmlFor="storeOut">
+                  Outgoing stocks
                 </Label>
                 <div className="space-y-0.5">
                   <Input
                     type="number"
-                    placeholder="Current stocks"
+                    step={1}
+                    placeholder="Outgoing stocks"
                     hasError={
-                      formik.touched.current &&
-                      formik.errors.current !== undefined
+                      formik.touched.storeOut &&
+                      formik.errors.storeOut !== undefined
                     }
-                    {...formik.getFieldProps("current")}
+                    {...formik.getFieldProps("storeOut")}
+                    onChange={(e) => {
+                      const val = Number(e.target.value);
+                      const usableStock =
+                        formik.values.storeIn + formik.values.carried;
+
+                      if (val > usableStock) {
+                        formik.setFieldError(
+                          "storeOut",
+                          `Must be less than usable stocks (${usableStock})`
+                        );
+                      } else {
+                        formik.setFieldValue("storeOut", val);
+                      }
+                    }}
                   />
                   <ErrorMessage
                     className="text-xs text-rose-600"
-                    name="current"
+                    name="storeOut"
                     component="p"
                   />
                 </div>
               </div>
 
               <div className="space-y-1">
-                <Label required htmlFor="unit">
-                  Unit
+                <Label required htmlFor="current">
+                  Current stocks
                 </Label>
                 <div className="space-y-0.5">
                   <Input
-                    type="text"
-                    placeholder="Unit"
-                    hasError={
-                      formik.touched.unit && formik.errors.unit !== undefined
+                    readOnly
+                    disabled
+                    type="number"
+                    {...formik.getFieldProps("current")}
+                    value={
+                      Number(formik.values.carried) +
+                      Number(formik.values.storeIn) -
+                      Number(formik.values.storeOut)
                     }
-                    {...formik.getFieldProps("unit")}
                   />
                   <ErrorMessage
                     className="text-xs text-rose-600"
-                    name="unit"
+                    name="current"
                     component="p"
                   />
                 </div>

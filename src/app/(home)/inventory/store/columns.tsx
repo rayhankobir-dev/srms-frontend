@@ -1,6 +1,7 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 "use client";
 import { IStock } from "@/types";
+import { format } from "date-fns";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import api, { endpoints } from "@/lib/api";
@@ -57,9 +58,9 @@ export const columns = [
     ),
     enableSorting: true,
   }),
-  columnHelper.accessor("storeOut", {
+  columnHelper.accessor("carried", {
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Store Out" />
+      <DataTableColumnHeader column={column} title="Carried Stock" />
     ),
     cell: (info) => (
       <div>
@@ -69,9 +70,9 @@ export const columns = [
     ),
     enableSorting: true,
   }),
-  columnHelper.accessor("carried", {
+  columnHelper.accessor("storeOut", {
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Remaining Stock" />
+      <DataTableColumnHeader column={column} title="Store Out" />
     ),
     cell: (info) => (
       <div>
@@ -93,6 +94,27 @@ export const columns = [
     ),
     enableSorting: true,
   }),
+  columnHelper.accessor("updatedBy", {
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Updated By" />
+    ),
+    cell: (info) => (
+      <div>
+        {info.getValue().firstName} {info.getValue().lastName}
+      </div>
+    ),
+    enableSorting: true,
+  }),
+  columnHelper.accessor("updatedAt", {
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Updated At" />
+    ),
+    cell: (info) => (
+      <div>{format(new Date(info.getValue()), "MMMM d, yyyy hh:mm a")}</div>
+    ),
+    enableSorting: true,
+  }),
+
   columnHelper.display({
     id: "actions",
     header: () => <div className="w-full text-center">Actions</div>,
@@ -108,9 +130,13 @@ export const columns = [
       ) => {
         try {
           setIsUpdating(true);
+          const current =
+            Number(values.carried) +
+            Number(values.storeIn) -
+            Number(values.storeOut);
           const { data } = await api.put(
             `${endpoints.stocks}/${row.original._id}`,
-            values
+            { ...values, current }
           );
           await new Promise((resolve) => setTimeout(resolve, 1500));
           updateStock(row.original._id, data);

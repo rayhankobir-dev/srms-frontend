@@ -1,10 +1,10 @@
 // Tremor Input [v1.0.5]
 
-import { RiEyeFill, RiEyeOffFill, RiSearchLine } from "@remixicon/react"
-import React from "react"
-import { tv, type VariantProps } from "tailwind-variants"
+import { RiEyeFill, RiEyeOffFill, RiSearchLine } from "@remixicon/react";
+import React from "react";
+import { tv, type VariantProps } from "tailwind-variants";
 
-import { cx, focusInput, focusRing, hasErrorInput } from "@/lib/utils"
+import { cx, focusInput, focusRing, hasErrorInput } from "@/lib/utils";
 
 const inputStyles = tv({
   base: [
@@ -45,12 +45,12 @@ const inputStyles = tv({
         "[appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none",
     },
   },
-})
+});
 
 interface InputProps
   extends React.InputHTMLAttributes<HTMLInputElement>,
     VariantProps<typeof inputStyles> {
-  inputClassName?: string
+  inputClassName?: string;
 }
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
@@ -61,18 +61,20 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
       hasError,
       enableStepper = true,
       type,
+      readOnly,
       ...props
     }: InputProps,
-    forwardedRef,
+    forwardedRef
   ) => {
-    const [typeState, setTypeState] = React.useState(type)
+    const [typeState, setTypeState] = React.useState(type);
 
-    const isPassword = type === "password"
-    const isSearch = type === "search"
+    const isPassword = type === "password";
+    const isSearch = type === "search";
 
     return (
       <div className={cx("relative w-full", className)} tremor-id="tremor-raw">
         <input
+          readOnly={readOnly}
           ref={forwardedRef}
           type={isPassword ? typeState : type}
           className={cx(
@@ -82,6 +84,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
               "pr-10": isPassword,
             },
             inputClassName,
+            readOnly && "cursor-not-allowed bg-gray-100"
           )}
           {...props}
         />
@@ -91,7 +94,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
               // base
               "pointer-events-none absolute bottom-0 left-2 flex h-full items-center justify-center",
               // text color
-              "text-gray-400 dark:text-gray-600",
+              "text-gray-400 dark:text-gray-600"
             )}
           >
             <RiSearchLine
@@ -103,7 +106,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
         {isPassword && (
           <div
             className={cx(
-              "absolute bottom-0 right-0 flex h-full items-center justify-center px-3",
+              "absolute bottom-0 right-0 flex h-full items-center justify-center px-3"
             )}
           >
             <button
@@ -115,11 +118,11 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
                 "text-gray-400 dark:text-gray-600",
                 // hover
                 "hover:text-gray-500 hover:dark:text-gray-500",
-                focusRing,
+                focusRing
               )}
               type="button"
               onClick={() => {
-                setTypeState(typeState === "password" ? "text" : "password")
+                setTypeState(typeState === "password" ? "text" : "password");
               }}
             >
               <span className="sr-only">
@@ -134,10 +137,10 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           </div>
         )}
       </div>
-    )
-  },
-)
+    );
+  }
+);
 
-Input.displayName = "Input"
+Input.displayName = "Input";
 
-export { Input, inputStyles, type InputProps }
+export { Input, inputStyles, type InputProps };

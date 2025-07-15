@@ -107,7 +107,11 @@ function StockResturantPage() {
   ) => {
     try {
       setIsLoading(true);
-      const { data } = await api.post(endpoints.inventory, values);
+      const inStock = values.newStock - values.cooked;
+      const { data } = await api.post(endpoints.inventory, {
+        ...values,
+        inStock,
+      });
       await new Promise((resolve) => setTimeout(resolve, 1500));
       addInventory(data);
       resetForm();

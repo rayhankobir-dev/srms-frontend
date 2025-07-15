@@ -59,7 +59,7 @@ export const SelectInput = <T,>({
     const selected = options.find((opt) => getOptionValue(opt.value) === val);
     if (selected) {
       onChange(selected.value);
-      // setIsOpen(false);
+      setIsOpen(false);
     }
   };
 
@@ -77,12 +77,15 @@ export const SelectInput = <T,>({
         )}
       >
         <SelectValue placeholder={isLoading ? <Spinner /> : placeholder}>
+          {isLoading && <Spinner />}
           {!isLoading && !value && (
             <span className="text-muted-foreground">{placeholder}</span>
           )}
-          {value && !options.find((opt) => getOptionValue(opt.value)) && (
-            <span className="text-muted-foreground">{placeholder}</span>
-          )}
+          {!isLoading &&
+            value &&
+            !options.find((opt) => getOptionValue(opt.value)) && (
+              <span className="text-muted-foreground">{placeholder}</span>
+            )}
           {
             options.find((opt) => getOptionValue(opt.value) === serializedValue)
               ?.label

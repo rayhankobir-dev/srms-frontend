@@ -75,18 +75,18 @@ export const columns = [
     cell: (info) => info.getValue().itemName,
     enableSorting: true,
   }),
-  columnHelper.accessor("createdAt", {
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Created At" />
-    ),
-    cell: (info) => info.getValue(),
-    enableSorting: true,
-  }),
   columnHelper.accessor("createdBy", {
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Created By" />
     ),
     cell: (info) => info.getValue().firstName,
+    enableSorting: true,
+  }),
+  columnHelper.accessor("createdAt", {
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Created At" />
+    ),
+    cell: (info) => info.getValue(),
     enableSorting: true,
   }),
   columnHelper.display({

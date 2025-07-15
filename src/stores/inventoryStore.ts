@@ -20,7 +20,7 @@ export const useInventoryStore = create<InventoryStore>((set) => ({
   updateInventory: (id, updatedItem) =>
     set((state) => ({
       inventory: state.inventory.map((item) =>
-        item._id === id ? { ...item, updatedItem } : item
+        item._id === id ? { ...item, ...updatedItem } : item
       ),
     })),
 

@@ -103,7 +103,11 @@ function StockStorePage() {
   const onFormSubmit = async (values: StoreFormValues, { resetForm }: any) => {
     try {
       setIsCreating(true);
-      const { data } = await api.post(endpoints.stocks, values);
+      const current =
+        Number(values.carried) +
+        Number(values.storeIn) -
+        Number(values.storeOut);
+      const { data } = await api.post(endpoints.stocks, { ...values, current });
       await new Promise((resolve) => setTimeout(resolve, 1500));
       addStocks(data);
       resetForm();

@@ -7,32 +7,16 @@ import {
   CardTitle,
 } from "@/components/ui/Card";
 import * as yup from "yup";
+import { IStock } from "@/types";
 import { Save } from "lucide-react";
+import toast from "react-hot-toast";
+import api, { endpoints } from "@/lib/api";
+import { useEffect, useState } from "react";
 import { Input } from "@/components/ui/Input";
 import { Label } from "@/components/ui/Label";
 import { Button } from "@/components/ui/Button";
+import { SelectInput } from "@/components/ui/SelectInput";
 import { ErrorMessage, FormikProvider, useFormik } from "formik";
-
-const validationSchema = yup.object().shape({
-  itemName: yup.string().required("Item Name is required"),
-  newStock: yup
-    .number()
-    .typeError("New Stock must be a number")
-    .required("New Stock is required"),
-  cooked: yup
-    .number()
-    .typeError("Cooked must be a number")
-    .required("Cooked is required"),
-  sold: yup
-    .number()
-    .typeError("Sales must be a number")
-    .required("Sales is required"),
-  inStock: yup
-    .number()
-    .typeError("In Stock must be a number")
-    .required("In Stock is required"),
-  unit: yup.string().required("Unit is required"),
-});
 
 export type RestaurantFormValues = {
   itemName: string;
@@ -64,6 +48,61 @@ export default function RestaurantForm({
   loadingText = "",
   setDialogOpen,
 }: Props) {
+  const [isFetching, setIsFetching] = useState(true);
+  const [stocks, setStocks] = useState<IStock[]>([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const { data } = await api.get(endpoints.stocks);
+        setStocks(data);
+        setIsFetching(false);
+      } catch (error: any) {
+        toast.error(error?.response?.data?.message || error.message);
+      } finally {
+        setIsFetching(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  const validationSchema = yup.object().shape({
+    itemName: yup.string().required("Item Name is required"),
+    newStock: yup
+      .number()
+      .min(0, "Incomming stocks must be greater than 0")
+      .typeError("Incomming ew stocks must be a number")
+      .required("Incomming stocks is required")
+      .test("max-stock", "New stock exceeds available stock", function (value) {
+        const { itemName } = this.parent;
+        const stock = stocks.find((s) => s.itemName === itemName);
+        return !stock || (value ?? 0) <= stock.current;
+      }),
+    cooked: yup
+      .number()
+      .typeError("Cooked must be a number")
+      .required("Cooked is required")
+      .min(0)
+      .test(
+        "cooked-less-than-stock",
+        "Cooked must not exceed incomming stocks",
+        function (value) {
+          const { newStock } = this.parent;
+          return value !== undefined && value <= newStock;
+        }
+      ),
+    sold: yup
+      .number()
+      .typeError("Sales must be a number")
+      .required("Sales is required"),
+    inStock: yup
+      .number()
+      .typeError("In Stock must be a number")
+      .required("In Stock is required"),
+    unit: yup.string().required("Unit is required"),
+  });
+
   const formik = useFormik({
     initialValues,
     validationSchema,
@@ -86,15 +125,25 @@ export default function RestaurantForm({
                   Item name
                 </Label>
                 <div className="space-y-0.5">
-                  <Input
-                    type="text"
-                    placeholder="Chicken Curry"
-                    hasError={
-                      formik.touched.itemName &&
-                      formik.errors.itemName !== undefined
-                    }
-                    {...formik.getFieldProps("itemName")}
+                  <SelectInput
+                    isLoading={isFetching}
+                    options={stocks.map((stock) => ({
+                      label: stock.itemName,
+                      value: stock.itemName,
+                    }))}
+                    onChange={(val) => {
+                      const selected = stocks.find(
+                        (stock) => stock.itemName === val
+                      );
+                      if (selected) {
+                        formik.setFieldValue("itemName", val);
+                        formik.setFieldValue("unit", selected.unit);
+                        formik.setFieldValue("newStock", selected.current);
+                      }
+                    }}
+                    value={formik.values.itemName}
                   />
+
                   <ErrorMessage
                     className="text-xs text-rose-600"
                     name="itemName"
@@ -104,11 +153,34 @@ export default function RestaurantForm({
               </div>
 
               <div className="space-y-1">
-                <Label required htmlFor="newStock">
-                  New stocks
+                <Label required htmlFor="unit">
+                  Unit
                 </Label>
                 <div className="space-y-0.5">
                   <Input
+                    readOnly
+                    type="text"
+                    placeholder="Unit"
+                    hasError={
+                      formik.touched.unit && formik.errors.unit !== undefined
+                    }
+                    {...formik.getFieldProps("unit")}
+                  />
+                  <ErrorMessage
+                    className="text-xs text-rose-600"
+                    name="unit"
+                    component="p"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1">
+                <Label required htmlFor="newStock">
+                  Incomming stocks
+                </Label>
+                <div className="space-y-0.5">
+                  <Input
+                    disabled={isFetching || formik.values.itemName === ""}
                     type="number"
                     placeholder="Incomming stocks"
                     hasError={
@@ -149,10 +221,11 @@ export default function RestaurantForm({
 
               <div className="space-y-1">
                 <Label required htmlFor="inStock">
-                  In stocks
+                  In restaurant stocks
                 </Label>
                 <div className="space-y-0.5">
                   <Input
+                    readOnly
                     type="number"
                     placeholder="In stocks"
                     hasError={
@@ -160,31 +233,11 @@ export default function RestaurantForm({
                       formik.errors.inStock !== undefined
                     }
                     {...formik.getFieldProps("inStock")}
+                    value={formik.values.newStock - formik.values.cooked}
                   />
                   <ErrorMessage
                     className="text-xs text-rose-600"
                     name="inStock"
-                    component="p"
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-1">
-                <Label required htmlFor="unit">
-                  Unit
-                </Label>
-                <div className="space-y-0.5">
-                  <Input
-                    type="text"
-                    placeholder="Unit"
-                    hasError={
-                      formik.touched.unit && formik.errors.unit !== undefined
-                    }
-                    {...formik.getFieldProps("unit")}
-                  />
-                  <ErrorMessage
-                    className="text-xs text-rose-600"
-                    name="unit"
                     component="p"
                   />
                 </div>
