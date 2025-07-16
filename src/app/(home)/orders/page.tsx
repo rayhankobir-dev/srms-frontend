@@ -61,7 +61,7 @@ function UsersPage() {
 
     try {
       setIsDeleting(true);
-      const { data } = await api.delete(`/bulk-delete`, {
+      const { data } = await api.delete(`${endpoints.orders}/bulk-delete`, {
         data: { ids: selectedIds },
       });
 

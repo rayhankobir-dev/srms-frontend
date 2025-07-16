@@ -24,7 +24,7 @@ export default function OrderPage() {
       try {
         setIsLoading(true);
         const { data } = await api.get(
-          `${endpoints.menus}?meal=${String(meal).toUpperCase()}`
+          `${endpoints.menus}?available=true&meal=${String(meal).toUpperCase()}`
         );
         setMenus(data);
 

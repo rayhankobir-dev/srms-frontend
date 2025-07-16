@@ -71,10 +71,11 @@ export default function RestaurantForm({
     itemName: yup.string().required("Item Name is required"),
     newStock: yup
       .number()
-      .min(0, "Incomming stocks must be greater than 0")
+      .min(1, "Incomming stocks must be greater than 0")
       .typeError("Incomming ew stocks must be a number")
       .required("Incomming stocks is required")
       .test("max-stock", "New stock exceeds available stock", function (value) {
+        if (initialValues) return true;
         const { itemName } = this.parent;
         const stock = stocks.find((s) => s.itemName === itemName);
         return !stock || (value ?? 0) <= stock.current;

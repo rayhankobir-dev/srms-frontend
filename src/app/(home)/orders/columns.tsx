@@ -107,7 +107,7 @@ export const columns = [
         const id = row.original._id;
         try {
           setIsDeleting(true);
-          const { data } = await api.delete(endpoints.orders);
+          const { data } = await api.delete(`${endpoints.orders}/${id}`);
           await new Promise((resolve) => setTimeout(resolve, 2000));
           removeOrders([id]);
           toast.success(data.message);
