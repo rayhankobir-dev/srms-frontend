@@ -3,7 +3,7 @@ import { Breadcrumbs } from "./Breadcrumbs";
 import ScreenToggler from "./ScreenToggler";
 import { SidebarTrigger } from "../ui/Sidebar";
 import QuickActions from "../shared/QuickActions";
-import NotificationPreviewer from "./NotificationPreviewer";
+// import NotificationPreviewer from "./NotificationPreviewer";
 
 function Header() {
   return (
@@ -13,9 +13,9 @@ function Header() {
       <Breadcrumbs />
       <div className="flex w-full justify-end">
         <QuickActions />
-        <ThemeToggler />
         <ScreenToggler />
-        <NotificationPreviewer />
+        <ThemeToggler />
+        {/* <NotificationPreviewer /> */}
       </div>
     </header>
   );

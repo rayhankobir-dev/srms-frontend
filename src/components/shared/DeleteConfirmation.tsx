@@ -11,12 +11,13 @@ import {
 import { Button, ButtonProps } from "@/components/ui/Button"
 import { ReactNode, useState } from "react"
 import Spinner from "./Spinner"
+import { Trash2 } from "lucide-react"
 
 interface ConfirmationProps {
   children: ReactNode
   title?: string
   description?: string
-  confirmText?: string
+  confirmText?: string | ReactNode,
   confirmBtnVariant?: ButtonProps["variant"]
   onConfirm?: () => void
   onCancel?: () => void
@@ -27,7 +28,10 @@ export default function DeleteConfirmation({
   children,
   title = "Are you absolutely sure?",
   description = "This action cannot be undone. This will permanently delete your account and remove your data from our servers.",
-  confirmText = "Delete",
+  confirmText = <>
+    <Trash2 size={14}/>
+    Delete
+  </>,
   confirmBtnVariant = "destructive",
   onConfirm,
   onCancel,

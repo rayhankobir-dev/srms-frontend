@@ -73,6 +73,13 @@ export const columns = [
     cell: (info) => info.getValue(),
     enableSorting: true,
   }),
+  columnHelper.accessor("dipositAmount", {
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Diposit Amount" />
+    ),
+    cell: (info) => info.getValue(),
+    enableSorting: true,
+  }),
   columnHelper.accessor("taxAmount", {
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Tax Amount" />
@@ -135,14 +142,14 @@ export const columns = [
               <DrawerContent>
                 <DrawerHeader>
                   <DrawerTitle className="text-xl">
-                    #Order Information
+                    #Order Breakdown
                   </DrawerTitle>
                   <DrawerDescription className="mt-1 text-sm">
-                    <p className="text-sm">#{row.original._id}</p>
-                    <p className="text-xs">
+                    <span className="text-sm">#{row.original._id}</span>
+                    <span className="inline-flex text-xs">
                       Make sure all the items are correctly ordered. Additionaly
                       tax and discount will be applied.
-                    </p>
+                    </span>
                   </DrawerDescription>
                 </DrawerHeader>
                 <div className="space-y-10">

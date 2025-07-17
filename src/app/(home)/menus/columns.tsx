@@ -1,15 +1,16 @@
 /* eslint-disable @next/next/no-img-element */
 /* eslint-disable react-hooks/rules-of-hooks */
 "use client";
-import api from "@/lib/api";
+import api, { endpoints } from "@/lib/api";
 import Link from "next/link";
 import { cx } from "@/lib/utils";
 import { useState } from "react";
+import { format } from "date-fns";
 import toast from "react-hot-toast";
 import { IMenuItem } from "@/types";
 import { Trash2, FileEdit } from "lucide-react";
+import { useMenuStore } from "@/stores/menuStore";
 import { Checkbox } from "@/components/ui/Checkbox";
-import { useStockStore } from "@/stores/stockStore";
 import { Button, buttonVariants } from "@/components/ui/Button";
 import { ColumnDef, createColumnHelper } from "@tanstack/react-table";
 import DeleteConfirmation from "@/components/shared/DeleteConfirmation";
@@ -72,7 +73,7 @@ export const columns = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Invenotry" />
     ),
-    cell: (info) => info.getValue().itemName,
+    cell: (info) => info.getValue()?.itemName,
     enableSorting: true,
   }),
   columnHelper.accessor("createdBy", {
@@ -82,11 +83,25 @@ export const columns = [
     cell: (info) => info.getValue().firstName,
     enableSorting: true,
   }),
+  columnHelper.accessor("updatedBy", {
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Updated By" />
+    ),
+    cell: (info) => info.getValue().firstName,
+    enableSorting: true,
+  }),
   columnHelper.accessor("createdAt", {
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Created At" />
     ),
-    cell: (info) => info.getValue(),
+    cell: (info) => format(new Date(info.getValue()), "MMMM d, yyyy hh:mm a"),
+    enableSorting: true,
+  }),
+  columnHelper.accessor("updatedAt", {
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Updated At" />
+    ),
+    cell: (info) => format(new Date(info.getValue()), "MMMM d, yyyy hh:mm a"),
     enableSorting: true,
   }),
   columnHelper.display({
@@ -94,17 +109,17 @@ export const columns = [
     header: () => <div className="w-full text-center">Actions</div>,
     cell: ({ row }) => {
       const [isDeleting, setIsDeleting] = useState(false);
-      const { removeStocks } = useStockStore();
+      const { removeMenuItems } = useMenuStore();
 
       const handleDelete = async (id: string) => {
         try {
           setIsDeleting(true);
-          const { data } = await api.delete(`/store-stocks`, {
+          const { data } = await api.delete(endpoints.menus, {
             data: { ids: [id] },
           });
 
           await new Promise((resolve) => setTimeout(resolve, 2000));
-          removeStocks([id]);
+          removeMenuItems([id]);
           toast.success(data.message);
         } catch (error: any) {
           toast.error(error?.response?.data?.message || error.message);

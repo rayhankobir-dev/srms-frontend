@@ -89,7 +89,7 @@ export const columns = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Address" />
     ),
-    cell: (info) => info.getValue(),
+    cell: (info) => <div className="max-w-40 line-clamp-2 truncate">{info.getValue()}</div>,
     enableSorting: false,
   }),
   columnHelper.accessor("role", {

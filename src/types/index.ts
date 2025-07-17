@@ -129,6 +129,7 @@ export interface IOrder {
   totalAmount: number;
   discountPercentage: number;
   discountAmount: string;
+  dipositAmount: string;
   taxApplied: number;
   taxAmount: number;
   paymentMethod: IPaymentMethod;

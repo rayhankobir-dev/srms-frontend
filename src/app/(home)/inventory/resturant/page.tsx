@@ -2,10 +2,8 @@
 "use client";
 
 import {
-  Calendar1,
   FileSpreadsheet,
   Plus,
-  Printer,
   Trash2,
   X,
 } from "lucide-react";
@@ -20,13 +18,13 @@ import {
 import { columns } from "./columns";
 import { toast } from "react-hot-toast";
 import api, { endpoints } from "@/lib/api";
+import { exportToExcel } from "@/lib/export";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { useDebouncedCallback } from "use-debounce";
 import { useEffect, useRef, useState } from "react";
 import { FormDialog } from "@/components/shared/FormDialog";
 import { useInventoryStore } from "@/stores/inventoryStore";
-import { exportTableToPDF, exportToExcel } from "@/lib/export";
 import { DataTable } from "@/components/ui/data-table/DataTable";
 import RestaurantForm, { RestaurantFormValues } from "./ResturantForm";
 import DeleteConfirmation from "@/components/shared/DeleteConfirmation";
@@ -206,23 +204,14 @@ function StockResturantPage() {
             >
               <Button variant="secondary">
                 <Plus size={18} />
-                Add
+                Add stock
               </Button>
             </FormDialog>
-            <Button
-              onClick={() => exportTableToPDF(inventory, columns)}
-              variant="secondary"
-            >
-              <Printer className="text-primary" size={18} />
-            </Button>
             <Button
               onClick={() => exportToExcel(inventory)}
               variant="secondary"
             >
               <FileSpreadsheet className="text-green-700" size={18} />
-            </Button>
-            <Button variant="secondary">
-              <Calendar1 size={18} />
             </Button>
           </div>
         </div>

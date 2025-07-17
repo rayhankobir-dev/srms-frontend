@@ -58,7 +58,7 @@ function MenusPage() {
 
     try {
       setIsDeleting(true);
-      const { data } = await api.delete(endpoints.stocks, {
+      const { data } = await api.delete(endpoints.menus, {
         data: { ids: selectedIds },
       });
 
@@ -145,7 +145,7 @@ function MenusPage() {
               href="/menus/create"
             >
               <Plus size={18} />
-              Create Menu
+              Create menu
             </Link>
           </div>
         </div>
