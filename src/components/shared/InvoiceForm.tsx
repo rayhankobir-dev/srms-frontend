@@ -362,6 +362,7 @@ export default function InvoiceForm({
                     type="number"
                     min="0"
                     max="100"
+                    step="any"
                     disabled={isEditMode}
                     {...formik.getFieldProps("discountPercentage")}
                   />
@@ -373,6 +374,8 @@ export default function InvoiceForm({
                   <Input
                     type="number"
                     min="0"
+                    max={100}
+                    step="any"
                     disabled={isEditMode}
                     {...formik.getFieldProps("taxApplied")}
                   />
@@ -444,6 +447,7 @@ export default function InvoiceForm({
                       id="dipositAmount"
                       type="number"
                       min="0"
+                      step="any"
                       {...formik.getFieldProps("dipositAmount")}
                       value={grandTotal}
                     />
