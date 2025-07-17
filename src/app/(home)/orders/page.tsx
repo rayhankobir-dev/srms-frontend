@@ -24,6 +24,8 @@ import { DateRange, DateRangePicker } from "@/components/ui/DateRangePicker";
 import DeleteConfirmation from "@/components/shared/DeleteConfirmation";
 
 function UsersPage() {
+  const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
+  const [filteredOrders, setFilteredOrders] = useState<any[]>([]);
   const [isFetching, setIsFetching] = useState(true);
   const [isDeleting, setIsDeleting] = useState(false);
   const [globalFilter, setGlobalFilter] = useState("");
@@ -32,8 +34,26 @@ function UsersPage() {
   const searchInputRef = useRef<HTMLInputElement>(null);
   const { orders, setOrders, removeOrders } = useOrderStore();
 
+  useEffect(() => {
+    // When orders or dateRange changes, update filteredOrders
+    if (!dateRange || (!dateRange.from && !dateRange.to)) {
+      setFilteredOrders(orders);
+      return;
+    }
+    const start = dateRange.from ? new Date(dateRange.from).setHours(0,0,0,0) : undefined;
+    const end = dateRange.to ? new Date(dateRange.to).setHours(23,59,59,999) : undefined;
+    setFilteredOrders(
+      orders.filter((order: any) => {
+        const updatedAt = new Date(order.updatedAt).getTime();
+        const afterStart = start === undefined || updatedAt >= start;
+        const beforeEnd = end === undefined || updatedAt <= end;
+        return afterStart && beforeEnd;
+      })
+    );
+  }, [orders, dateRange]);
+
   const table = useReactTable({
-    data: orders,
+    data: filteredOrders,
     columns,
     state: {
       globalFilter,
@@ -106,10 +126,9 @@ function UsersPage() {
   };
 
   const handleDateRangeChange = (value: DateRange | undefined) => {
-    if(value) {
-      
-    }
+    setDateRange(value);
   };
+
 
   useEffect(() => {
     fetchData();
