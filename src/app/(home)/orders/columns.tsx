@@ -11,6 +11,7 @@ import { useState } from "react";
 import { IOrder } from "@/types";
 import { cx } from "@/lib/utils";
 import toast from "react-hot-toast";
+import { format } from "date-fns";
 import api, { endpoints } from "@/lib/api";
 import { Eye, Trash2 } from "lucide-react";
 import { Divider } from "@/components/ui/Divider";
@@ -91,16 +92,7 @@ export const columns = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Ordered Date" />
     ),
-    cell: (info) => {
-      const value = info.getValue();
-      return value
-        ? new Date(value).toLocaleDateString(undefined, {
-            year: "numeric",
-            month: "short",
-            day: "numeric",
-          })
-        : "-";
-    },
+    cell: (info) => format(info.getValue(), "MMMM d, yyyy hh:mm a"),
     enableSorting: true,
   }),
   columnHelper.display({

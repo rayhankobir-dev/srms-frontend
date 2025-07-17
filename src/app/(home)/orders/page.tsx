@@ -18,8 +18,9 @@ import { Button } from "@/components/ui/Button";
 import { useDebouncedCallback } from "use-debounce";
 import { useEffect, useRef, useState } from "react";
 import { useOrderStore } from "@/stores/orderStore";
+import { FileSpreadsheet, Trash2, X } from "lucide-react";
 import { DataTable } from "@/components/ui/data-table/DataTable";
-import { Calendar1, FileSpreadsheet, Trash2, X } from "lucide-react";
+import { DateRange, DateRangePicker } from "@/components/ui/DateRangePicker";
 import DeleteConfirmation from "@/components/shared/DeleteConfirmation";
 
 function UsersPage() {
@@ -104,6 +105,12 @@ function UsersPage() {
     }
   };
 
+  const handleDateRangeChange = (value: DateRange | undefined) => {
+    if(value) {
+      
+    }
+  };
+
   useEffect(() => {
     fetchData();
   }, []);
@@ -133,7 +140,7 @@ function UsersPage() {
             </Button>
           </div>
 
-          <div className="min-w-fit space-x-1.5">
+          <div className="flex items-center min-w-fit space-x-1.5">
             {(table.getSelectedRowModel().rows.length > 1 ||
               table.getIsAllPageRowsSelected() ||
               table.getIsAllRowsSelected()) && (
@@ -154,9 +161,7 @@ function UsersPage() {
             <Button onClick={() => exportToExcel(orders)} variant="secondary">
               <FileSpreadsheet className="text-green-700" size={18} />
             </Button>
-            <Button variant="secondary">
-              <Calendar1 size={18} />
-            </Button>
+            <DateRangePicker onChange={handleDateRangeChange}/>
           </div>
         </div>
 
