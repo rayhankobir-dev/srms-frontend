@@ -132,6 +132,7 @@ export default function InvoiceForm({
               discountAmount,
               taxAmount,
               status: "SERVED",
+              dipositAmount: grandTotal,
               paymentMethod: values.paymentMethod,
               paymentStatus: "PAID",
             }
